@@ -13,3 +13,5 @@ services:
     App\Action\:
         resource: '../src/Action'
         tags: ['controller.service_arguments']
+
+    Lcobucci\JWT\Parsing\Encoder: ~

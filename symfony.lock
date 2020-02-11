@@ -1,4 +1,7 @@
 {
+    "lcobucci/jwt": {
+        "version": "3.3.1"
+    },
     "php": {
         "version": "7.3"
     },

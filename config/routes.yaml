@@ -1,3 +1,9 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+platform_jwks:
+    methods: [GET]
+    path: /platform/.well-know/jwks.json
+    controller: App\Action\Platform\Security\JWKSAction
+
+tool_jwks:
+    methods: [GET]
+    path: /tool/.well-know/jwks.json
+    controller: App\Action\Tool\Security\JWKSAction
