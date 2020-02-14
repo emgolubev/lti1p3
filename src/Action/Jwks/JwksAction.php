@@ -20,44 +20,49 @@
 
 declare(strict_types=1);
 
-namespace App\Action\Platform\Security;
+namespace App\Action\Jwks;
 
+use App\Lti\Core\Security\Jwks\KeyChainExporter;
+use App\Lti\Core\Security\Key\KeyChainRepositoryInterface;
 use Lcobucci\JWT\Parsing\Encoder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class JWKSAction
+class JwksAction
 {
     /** @var Encoder */
     private $encoder;
 
-    /**
-     * JWKSAction constructor.
-     * @param Encoder $encoder
-     */
-    public function __construct(Encoder $encoder)
-    {
+    /** @var KeyChainRepositoryInterface */
+    private $repository;
+
+    /** @var KeyChainExporter */
+    private $exporter;
+
+    public function __construct(
+        Encoder $encoder,
+        KeyChainRepositoryInterface $repository,
+        KeyChainExporter $exporter
+    ) {
         $this->encoder = $encoder;
+        $this->repository = $repository;
+        $this->exporter = $exporter;
     }
 
-
-    public function __invoke(): Response
+    public function __invoke(string $identifier): Response
     {
-        $privateKey = openssl_pkey_get_public(
-            file_get_contents(__DIR__ . '/../../../../config/keys/platform/public.key')
-        );
+        $chains = $this->repository->findByIdentifier($identifier);
 
-        $details = openssl_pkey_get_details($privateKey);
+        if (empty($chains)) {
+            throw new NotFoundHttpException(sprintf("No JWK for chain identifier '%s'", $identifier));
+        }
 
-        $components = array(
-            'kty' => 'RSA',
-            'alg' => 'RS256',
-            'use' => 'sig',
-            'e' => $this->encoder->base64UrlEncode($details['rsa']['e']),
-            'n' => $this->encoder->base64UrlEncode($details['rsa']['n']),
-            'kid' => '1234',
-        );
+        $jwks = [];
+        foreach ($chains as $chain) {
+            $jwks[] = $this->exporter->export($chain);
+        }
 
-        return new JsonResponse($components);
+        return new JsonResponse(['keys' => $jwks]);
     }
 }

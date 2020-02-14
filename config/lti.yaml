@@ -1,0 +1,26 @@
+parameters:
+    platforms:
+        platformImsglobal:
+            name: "IMS Test Platform"
+            audience: "https://lti-ri.imsglobal.org"
+            oAuth2ClientId: "12345"
+            oAuth2AccessTokenUrl: "https://lti-ri.imsglobal.org/platforms/744/access_tokens"
+            oidcAuthUrl: "https://lti-ri.imsglobal.org/platforms/744/authorizations/new"
+            jwksUrl: "https://lti-ri.imsglobal.org/platforms/744/platform_keys/772.json"
+    tools:
+        toolLocal:
+            name: "OAT Test Tool"
+            oAuth2ClientId: "12345"
+            deepLaunchUrl: "https://lti-ri.imsglobal.org/platforms/531/authorizations/new"
+            oidcLoginInitiationUrl: "https://lti-ri.imsglobal.org/platforms/531/access_tokens"
+            jwksUrl: "http://localhost:8008/lti/.well-know/toolLocal/jwks.json"
+    jwks:
+        toolLocal:
+            toolLocalKid1:
+                publicKey: "file://%kernel.project_dir%/config/keys/tool/public.key"
+                privateKey: "file://%kernel.project_dir%/config/keys/tool/private.key"
+                privateKeyPassPhrase: ~
+    deployments:
+        deployment1:
+            platform: platformImsglobal
+            tool: toolLocal

@@ -1,10 +1,10 @@
-parameters:
+imports:
+    - { resource: 'lti.yaml' }
 
 services:
-    # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        autowire: true
+        autoconfigure: true
 
     App\:
         resource: '../src/*'
@@ -14,4 +14,18 @@ services:
         resource: '../src/Action'
         tags: ['controller.service_arguments']
 
+    App\Lti\Core\Security\Key\KeyChainRepositoryInterface:
+        factory:   ['@App\Lti\Builder\KeyChainRepositoryBuilder', 'build']
+        arguments: ['%kernel.project_dir%/config/lti.yaml']
+
+    App\Lti\Core\Deployment\DeploymentRepositoryInterface:
+        factory:   ['@App\Lti\Builder\DeploymentRepositoryBuilder', 'build']
+        arguments: ['%kernel.project_dir%/config/lti.yaml']
+
     Lcobucci\JWT\Parsing\Encoder: ~
+
+    Lcobucci\JWT\Parser: ~
+
+    Symfony\Component\Yaml\Parser: ~
+
+

@@ -20,44 +20,35 @@
 
 declare(strict_types=1);
 
-namespace App\Action\Tool\Security;
+namespace App\Lti\Core\Security\Jwks;
 
+use App\Lti\Core\Security\Key\KeyChain;
 use Lcobucci\JWT\Parsing\Encoder;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 
-class JWKSAction
+class KeyChainExporter
 {
     /** @var Encoder */
     private $encoder;
 
-    /**
-     * JWKSAction constructor.
-     * @param Encoder $encoder
-     */
+
     public function __construct(Encoder $encoder)
     {
         $this->encoder = $encoder;
     }
 
-
-    public function __invoke(): Response
+    public function export(KeyChain $chain): array
     {
-        $privateKey = openssl_pkey_get_public(
-            file_get_contents(__DIR__ . '/../../../../config/keys/tool/public.key')
+        $components = openssl_pkey_get_details(
+            openssl_pkey_get_public($chain->getPublicKey()->getContent())
         );
 
-        $details = openssl_pkey_get_details($privateKey);
-
-        $components = array(
-            'kty' => 'RSA',
+        return [
             'alg' => 'RS256',
+            'kty' => 'RSA',
             'use' => 'sig',
-            'e' => $this->encoder->base64UrlEncode($details['rsa']['e']),
-            'n' => $this->encoder->base64UrlEncode($details['rsa']['n']),
-            'kid' => '1234',
-        );
-
-        return new JsonResponse($components);
+            'n' => $this->encoder->base64UrlEncode($components['rsa']['n']),
+            'e' => $this->encoder->base64UrlEncode($components['rsa']['e']),
+            'kid' => $chain->getId(),
+        ];
     }
 }
