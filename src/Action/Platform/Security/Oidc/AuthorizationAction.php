@@ -101,6 +101,10 @@ class AuthorizationAction
             ->withClaim(MessageLaunchInterface::CLAIM_LTI_DEPLOYMENT_ID, $deployment->getId())
             ->withClaim(MessageLaunchInterface::CLAIM_LTI_VERSION, '1.3.0')
             ->withClaim(MessageLaunchInterface::CLAIM_LTI_MESSAGE_TYPE, 'LtiResourceLinkRequest')
+            ->withClaim(MessageLaunchInterface::CLAIM_LTI_RESOURCE_LINK, [
+                'id' => '1234567'
+            ])
+            ->withClaim(MessageLaunchInterface::CLAIM_LTI_TARGET_LINK_URI, $deployment->getTool()->getDeepLaunchUrl())
             ->withClaim(MessageLaunchInterface::CLAIM_LTI_ROLES, [
                 'http://purl.imsglobal.org/vocab/lis/v2/membership#Learner',
                 'http://purl.imsglobal.org/vocab/lis/v2/institution/person#Student',

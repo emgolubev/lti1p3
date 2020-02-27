@@ -25,3 +25,8 @@ platform_security_oidc_authorization:
     methods: [GET, POST]
     path: /platform/oidc/authorization
     controller: App\Action\Platform\Security\Oidc\AuthorizationAction
+
+platform_security_oauth2_access_token:
+    methods: [GET, POST]
+    path: /platform/oauth2/access-token
+    controller: App\Action\Platform\Security\OAuth2\AccessTokenAction

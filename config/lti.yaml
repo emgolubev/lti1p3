@@ -56,6 +56,15 @@ parameters:
                 keyChain: "kid2"
                 jwksUrl: "http://localhost:8000/lti/myKeySet2/.well-know/jwks.json"
             tool:
+                id: "imsCertTool"
+                keyChain: "kid2"
+                jwksUrl: "http://localhost:8000/lti/myKeySet1/.well-know/jwks.json"
+        localToolDeploy:
+            platform:
+                id: "myLocalPlatform"
+                keyChain: "kid2"
+                jwksUrl: "http://localhost:8000/lti/myKeySet2/.well-know/jwks.json"
+            tool:
                 id: "myLocalTool"
                 keyChain: "kid1"
                 jwksUrl: "http://localhost:8000/lti/myKeySet1/.well-know/jwks.json"
