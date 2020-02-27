@@ -41,12 +41,12 @@ class KeyChainRepositoryBuilder
     {
         $repository = new KeyChainRepository();
 
-        foreach ($this->parameterBag->get('jwks') as $identifier => $jwks) {
-            foreach ($jwks as $kid => $data) {
+        foreach ($this->parameterBag->get('keyChains') as $group => $keyChainsData) {
+            foreach ($keyChainsData as $id => $data) {
                 $repository->add(
-                    $identifier,
                     new KeyChain(
-                        $kid,
+                        $id,
+                        $group,
                         $data['publicKey'],
                         $data['privateKey'] ?? null,
                         $data['privateKeyPassPhrase'] ?? null

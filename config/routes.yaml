@@ -1,8 +1,10 @@
+# Jwks
 lti_jwks:
     methods: [GET]
-    path: /lti/.well-know/{identifier}/jwks.json
+    path: /lti/{group}/.well-know/jwks.json
     controller: App\Action\Jwks\JwksAction
 
+# Tools
 tool_security_oidc_login_initiation:
     methods: [GET, POST]
     path: /tool/oidc/login-initiation
@@ -13,7 +15,13 @@ tool_security_deep_link_launch:
     path: /tool/deep-link/launch
     controller: App\Action\Tool\Security\DeepLink\LaunchAction
 
-tool_feature:
+# Platforms
+platform_security_oidc_login_initiation:
     methods: [GET, POST]
-    path: /tool/feature
-    controller: App\Action\Tool\Feature\FeatureAction
+    path: /platform/oidc/login-request
+    controller: App\Action\Platform\Security\Oidc\LoginRequestAction
+
+platform_security_oidc_authorization:
+    methods: [GET, POST]
+    path: /platform/oidc/authorization
+    controller: App\Action\Platform\Security\Oidc\AuthorizationAction

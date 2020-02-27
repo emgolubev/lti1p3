@@ -24,5 +24,7 @@ namespace App\Lti\Core\Deployment;
 
 interface DeploymentRepositoryInterface
 {
+    public function find(string $id): ?DeploymentInterface;
+
     public function findByIssuer(string $issuer): ?DeploymentInterface;
 }

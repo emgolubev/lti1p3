@@ -1,0 +1,280 @@
+{% extends 'base.html.twig' %}
+
+{% block nav_title %}[Tool] Message Launch Result{% endblock %}
+
+{% block body %}
+    <div class="jumbotron">
+        <ul class="nav nav-tabs nav-fill nav-hover" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="message-tab" data-toggle="tab" href="#message" role="tab" aria-controls="message" aria-selected="true">
+                    <i class="fas fa-envelope-open"></i>&nbsp;Message
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="security-tab" data-toggle="tab" href="#security" role="tab" aria-controls="security" aria-selected="false">
+                    <i class="fas fa-shield-alt"></i>&nbsp;Security
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="deploy-tab" data-toggle="tab" href="#deploy" role="tab" aria-controls="deploy" aria-selected="false">
+                    <i class="fas fa-project-diagram"></i>&nbsp;Deployment
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="user-tab" data-toggle="tab" href="#user" role="tab" aria-controls="user" aria-selected="false">
+                    <i class="fas fa-user"></i>&nbsp;User
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="claims-tab" data-toggle="tab" href="#claims" role="tab" aria-controls="claims" aria-selected="false">
+                    <i class="fas fa-database"></i>&nbsp;Claims
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="message" role="tabpanel" aria-labelledby="message-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-text">
+                            <h5 class="card-title">
+                                <i class="fas fa-info-circle"></i>&nbsp;Details
+                            </h5>
+                            <hr/>
+                            <dl class="list-unstyled">
+                                <dt>LTI Version</dt>
+                                <dd><span class="badge badge-pill badge-success">{{  launch.version }}</span></dd>
+                                <dt>LTI Message Type</dt>
+                                <dd><span class="badge badge-pill badge-success">{{ launch.messageType }}</span></dd>
+                                <dt>LTI Message ID</dt>
+                                <dd><code>{{ launch.id }}</code></dd>
+                            </dl>
+                            <h5 class="card-title">
+                                <i class="fas fa-check-circle"></i>&nbsp;Validations
+                            </h5>
+                            <hr/>
+                            {% if not launchValidationResult.hasFailures %}
+                                <div class="alert alert-success" role="alert">
+                                    <i class="fas fa-check"></i>&nbsp;
+                                    Message is valid
+                                </div>
+                            {% else %}
+                                <div class="alert alert-danger" role="alert">
+                                    <i class="fas fa-exclamation-circle"></i>&nbsp;
+                                    Message is invalid
+                                </div>
+                            {% endif %}
+                            <dl class="list-unstyled">
+                                <dt>Successful checks</dt>
+                                <dd>
+                                    {% for success in launchValidationResult.successes %}
+                                        <span class="badge badge-success"><i class="fas fa-check"></i></span>&nbsp;
+                                        {{ success }}<br/>
+                                    {% else %}
+                                        n/a
+                                    {% endfor %}
+                                </dd>
+                                <dt>Failing checks</dt>
+                                <dd>
+                                    {% for failure in launchValidationResult.failures %}
+                                        <span class="badge badge-danger"><i class="fas fa-exclamation-circle"></i></span>&nbsp;
+                                        {{ failure }}<br/>
+                                    {% else %}
+                                        n/a
+                                    {% endfor %}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="security" role="tabpanel" aria-labelledby="security-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-text">
+                            <h5 class="card-title">
+                                <i class="fas fa-sign-in-alt"></i>&nbsp;OpenID Connect Login Initiation
+                            </h5>
+                            <hr/>
+                            {% if launch.isOidcLoginInitiation %}
+                                <div class="alert alert-success" role="alert">
+                                    <i class="fas fa-check"></i>&nbsp;
+                                    Message launched using OpenID Connect login initiation flow
+                                </div>
+                                <dl class="list-unstyled">
+                                    <dt>JWT State</dt>
+                                    <dd>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <a target="_blank" class="btn btn-secondary" href="https://jwt.io?token={{ launch.state }}" role="button" title="See on jwt.io">
+                                                    <i class="fas fa-external-link-alt"></i>
+                                                </a>
+                                            </div>
+                                            <input type="text" class="form-control" placeholder="state" value="{{ launch.state }}" readonly>
+                                        </div>
+                                    </dd>
+                                </dl>
+                            {% else %}
+                                <div class="alert alert-dark" role="alert">
+                                    <i class="fas fa-exclamation-triangle"></i>&nbsp;
+                                    Message was not launched using OpenID Connect login initiation flow
+                                </div>
+                            {% endif %}
+                            <h5 class="card-title">
+                                <i class="fas fa-lock"></i>&nbspToken
+                            </h5>
+                            <hr/>
+                            <dl class="list-unstyled">
+                                <dt>JWT ID Token</dt>
+                                <dd>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <a target="_blank" class="btn btn-secondary" href="https://jwt.io?token={{ launch.token }}" role="button" title="See on jwt.io">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </a>
+                                        </div>
+                                        <input type="text" class="form-control" placeholder="token" value="{{ launch.token }}" readonly>
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="deploy" role="tabpanel" aria-labelledby="deploy-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-text">
+                            <h5 class="card-title">
+                                <i class="fas fa-project-diagram"></i>&nbsp;Deployment
+                            </h5>
+                            <hr/>
+                            <dl class="list-unstyled">
+                                <dt>ID</dt>
+                                <dd><code>{{ launch.deployment.id }}</code></dd>
+                                <dt>Platform Jwks Url</dt>
+                                <dd><a target="_blank" href="{{ launch.deployment.platformContext.jwksUrl }}">{{ launch.deployment.platformContext.jwksUrl|default('n/a') }}</a></dd>
+                                <dt>Tool Jwks Url</dt>
+                                <dd><a target="_blank" href="{{ launch.deployment.toolContext.jwksUrl }}">{{ launch.deployment.toolContext.jwksUrl|default('n/a') }}</a></dd>
+                            </dl>
+                            <div class="float-left">
+                                <h5 class="card-title">
+                                    <i class="fas fa-industry"></i>&nbsp;Platform
+                                </h5>
+                                <hr/>
+                                <dl class="list-unstyled">
+                                    <dt>ID</dt>
+                                    <dd><code>{{ launch.deployment.platform.id }}</code></dd>
+                                    <dt>Name</dt>
+                                    <dd>{{ launch.deployment.platform.name }}</dd>
+                                    <dt>Audience</dt>
+                                    <dd>{{ launch.deployment.platform.audience }}</dd>
+                                    <dt>OAuth2 Client ID</dt>
+                                    <dd>{{ launch.deployment.platform.oAuth2ClientId }}</dd>
+                                    <dt>OAuth2 Access Token Url</dt>
+                                    <dd><a target="_blank" href="{{ launch.deployment.platform.oAuth2AccessTokenUrl }}">{{ launch.deployment.platform.oAuth2AccessTokenUrl }}</a></dd>
+                                    <dt>OIDC Auth Url</dt>
+                                    <dd><a href="{{ launch.deployment.platform.oidcAuthenticationUrl }}">{{ launch.deployment.platform.oidcAuthenticationUrl }}</a></dd>
+                                </dl>
+                            </div>
+                            <div class="float-right">
+                                <h5 class="card-title">
+                                    <i class="fas fa-wrench"></i>&nbsp;Tool
+                                </h5>
+                                <hr/>
+                                <dl class="list-unstyled">
+                                    <dt>ID</dt>
+                                    <dd><code>{{ launch.deployment.tool.id }}</code></dd>
+                                    <dt>Name</dt>
+                                    <dd>{{ launch.deployment.tool.name }}</dd>
+                                    <dt>OAuth2 Client ID</dt>
+                                    <dd>{{ launch.deployment.tool.oAuth2ClientId }}</dd>
+                                    <dt>Deep Launch Url</dt>
+                                    <dd><a target="_blank" href="{{ launch.deployment.tool.deepLaunchUrl }}">{{ launch.deployment.tool.deepLaunchUrl }}</a></dd>
+                                    <dt>OIDC Login Initiation Url</dt>
+                                    <dd><a target="_blank" href="{{ launch.deployment.tool.oidcLoginInitiationUrl }}">{{ launch.deployment.tool.oidcLoginInitiationUrl }}</a></dd>
+                                </dl>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="user" role="tabpanel" aria-labelledby="user-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-text">
+                        <h5 class="card-title">
+                            <i class="fas fa-user-shield"></i>&nbsp;Type
+                        </h5>
+                        <hr/>
+                        {% if launch.isAnonymous %}
+                            <div class="alert alert-dark" role="alert">
+                                <i class="fas fa-user-secret"></i>&nbsp;
+                                Anonymous User
+                            </div>
+                        {% else %}
+                            <div class="alert alert-success" role="alert">
+                                <i class="fas fa-user-check"></i>&nbsp;
+                                Platform Trusted User
+                            </div>
+                        {% endif %}
+                        </div>
+                        {% if not launch.isAnonymous %}
+                            <h5 class="card-title">
+                                <i class="fas fa-info-circle"></i>&nbsp;Details
+                            </h5>
+                            <hr/>
+                            <div class="float-left">
+                                <dl class="list-unstyled">
+                                    <dt>Name</dt>
+                                    <dd>{{ launch.getClaim(constant('App\\Lti\\Core\\Message\\MessageLaunchInterface::CLAIM_USER_NAME'))|default('n/a') }}</dd>
+                                    <dt>Email</dt>
+                                    <dd>{{ launch.getClaim(constant('App\\Lti\\Core\\Message\\MessageLaunchInterface::CLAIM_USER_EMAIL'))|default('n/a') }}</dd>
+                                    <dt>Given name</dt>
+                                    <dd>{{ launch.getClaim(constant('App\\Lti\\Core\\Message\\MessageLaunchInterface::CLAIM_USER_GIVEN_NAME'))|default('n/a') }}</dd>
+                                    <dt>Family name</dt>
+                                    <dd>{{ launch.getClaim(constant('App\\Lti\\Core\\Message\\MessageLaunchInterface::CLAIM_USER_FAMILY_NAME'))|default('n/a') }}</dd>
+                                    <dt>Middle name</dt>
+                                    <dd>{{ launch.getClaim(constant('App\\Lti\\Core\\Message\\MessageLaunchInterface::CLAIM_USER_MIDDLE_NAME'))|default('n/a') }}</dd>
+                                    <dt>Locale</dt>
+                                    <dd>{{ launch.getClaim(constant('App\\Lti\\Core\\Message\\MessageLaunchInterface::CLAIM_USER_LOCALE'))|default('n/a') }}</dd>
+                                </dl>
+                            </div>
+                            <div class="float-right">
+                                <dl class="list-unstyled">
+                                    <dt>Picture</dt>
+                                    <dd>
+                                        {% if launch.getClaim(constant('App\\Lti\\Core\\Message\\MessageLaunchInterface::CLAIM_USER_PICTURE')) %}
+                                            <img
+                                                    src="{{ launch.getClaim(constant('App\\Lti\\Core\\Message\\MessageLaunchInterface::CLAIM_USER_PICTURE')) }}"
+                                                    class="img-thumbnail rounded"
+                                                    alt="{{ launch.getClaim(constant('App\\Lti\\Core\\Message\\MessageLaunchInterface::CLAIM_USER_PICTURE')) }}"
+                                                    height="350"
+                                                    width="350"
+                                            />
+                                        {% else %}
+                                            no picture
+                                        {% endif %}
+                                    </dd>
+                                </dl>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="claims" role="tabpanel" aria-labelledby="claims-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-text">
+                            <h5 class="card-title">
+                                <i class="fas fa-database"></i>&nbsp;Message Claims
+                            </h5>
+                            <hr/>
+                            <pre>{{ launch.claims|json_encode(constant('JSON_PRETTY_PRINT') + constant('JSON_UNESCAPED_SLASHES')) }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}

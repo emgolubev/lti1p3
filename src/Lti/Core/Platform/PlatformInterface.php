@@ -22,9 +22,7 @@ declare(strict_types=1);
 
 namespace App\Lti\Core\Platform;
 
-use App\Lti\Core\Security\Jwks\JwksAwareInterface;
-
-interface PlatformInterface extends JwksAwareInterface
+interface PlatformInterface
 {
     public function getId(): string;
 

@@ -1,11 +1,18 @@
 imports:
     - { resource: 'lti.yaml' }
+    - { resource: 'users.yaml' }
+
+parameters:
+    lti.oidc.token.ttl: 500
+    lti.oidc.state.ttl: 500
+    lti.oidc.nonce.ttl: 500
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
 
+    ### APPLICATION SERVICES ###
     App\:
         resource: '../src/*'
         exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
@@ -18,13 +25,27 @@ services:
         factory:   ['@App\Lti\Builder\KeyChainRepositoryBuilder', 'build']
         arguments: ['%kernel.project_dir%/config/lti.yaml']
 
+    App\Lti\Core\Platform\PlatformRepositoryInterface:
+        factory:   ['@App\Lti\Builder\PlatformRepositoryBuilder', 'build']
+        arguments: ['%kernel.project_dir%/config/lti.yaml']
+
+    App\Lti\Core\Tool\ToolRepositoryInterface:
+        factory:   ['@App\Lti\Builder\ToolRepositoryBuilder', 'build']
+        arguments: ['%kernel.project_dir%/config/lti.yaml']
+
     App\Lti\Core\Deployment\DeploymentRepositoryInterface:
         factory:   ['@App\Lti\Builder\DeploymentRepositoryBuilder', 'build']
         arguments: ['%kernel.project_dir%/config/lti.yaml']
 
+    ### VENDORS SERVICES ###
+    CoderCat\JWKToPEM\JWKConverter: ~
+
     Lcobucci\JWT\Parsing\Encoder: ~
 
     Lcobucci\JWT\Parser: ~
+
+    Lcobucci\JWT\Signer:
+        class: Lcobucci\JWT\Signer\Rsa\Sha256
 
     Symfony\Component\Yaml\Parser: ~
 

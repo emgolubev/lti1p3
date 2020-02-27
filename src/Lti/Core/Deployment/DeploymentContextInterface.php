@@ -20,17 +20,13 @@
 
 declare(strict_types=1);
 
-namespace App\Action\Tool\Feature;
+namespace App\Lti\Core\Deployment;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use App\Lti\Core\Security\Key\KeyChainInterface;
 
-class FeatureAction
+interface DeploymentContextInterface
 {
-    public function __invoke(Request $request): Response
-    {
-        var_dump($request);
+    public function getKeyChain(): ?KeyChainInterface;
 
-        die();
-    }
+    public function getJwksUrl(): ?string;
 }

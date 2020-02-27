@@ -36,13 +36,29 @@ class DeploymentRepository implements DeploymentRepositoryInterface
 
     public function add(DeploymentInterface $deployment): self
     {
-        $this->deployments[$deployment->getPlatform()->getAudience()] = $deployment;
+        $this->deployments[$deployment->getId()] = $deployment;
 
         return $this;
     }
 
+    public function find(string $id): ?DeploymentInterface
+    {
+        return $this->deployments[$id] ?? null;
+    }
+
     public function findByIssuer(string $issuer): ?DeploymentInterface
     {
-        return $this->deployments[$issuer] ?? null;
+        foreach ($this->deployments as $deployment) {
+            if ($deployment->getPlatform()->getAudience() === $issuer) {
+                return $deployment;
+            }
+        }
+
+        return null;
+    }
+
+    public function findAll(): array
+    {
+        return $this->deployments;
     }
 }

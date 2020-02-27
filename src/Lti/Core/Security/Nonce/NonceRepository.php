@@ -20,35 +20,34 @@
 
 declare(strict_types=1);
 
-namespace App\Lti\Core\Security\Jwks;
+namespace App\Lti\Core\Security\Nonce;
 
-use App\Lti\Core\Security\Key\KeyChain;
-use Lcobucci\JWT\Parsing\Encoder;
-
-class KeyChainExporter
+class NonceRepository implements NonceRepositoryInterface
 {
-    /** @var Encoder */
-    private $encoder;
+    /** @var NonceInterface[] */
+    private $nonces;
 
-
-    public function __construct(Encoder $encoder)
+    public function __construct(array $nonces = [])
     {
-        $this->encoder = $encoder;
+        foreach ($nonces as $nonce) {
+            $this->add($nonce);
+        }
     }
 
-    public function export(KeyChain $chain): array
+    public function add(NonceInterface $nonce): self
     {
-        $components = openssl_pkey_get_details(
-            openssl_pkey_get_public($chain->getPublicKey()->getContent())
-        );
+        $this->nonces[$nonce->getValue()] = $nonce;
 
-        return [
-            'alg' => 'RS256',
-            'kty' => 'RSA',
-            'use' => 'sig',
-            'n' => $this->encoder->base64UrlEncode($components['rsa']['n']),
-            'e' => $this->encoder->base64UrlEncode($components['rsa']['e']),
-            'kid' => $chain->getId(),
-        ];
+        return $this;
+    }
+
+    public function find(string $value): ?NonceInterface
+    {
+        return $this->nonces[$value] ?? null;
+    }
+
+    public function save(NonceInterface $nonce): void
+    {
+        $this->add($nonce);
     }
 }

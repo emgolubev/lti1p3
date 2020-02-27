@@ -22,86 +22,54 @@ declare(strict_types=1);
 
 namespace App\Action\Tool\Security\Oidc;
 
-use App\Lti\Core\Deployment\DeploymentRepositoryInterface;
-use App\Lti\Core\Security\Key\KeyChainRepositoryInterface;
-use Carbon\Carbon;
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Signer\Key;
-use Lcobucci\JWT\Signer\Rsa\Sha256;
-use Ramsey\Uuid\Uuid;
+use App\Lti\Core\Exception\LtiExceptionInterface;
+use App\Lti\Core\Security\Oidc\LoginInitiationRequest;
+use App\Lti\Core\Security\Oidc\LoginInitiator;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class LoginInitiationAction
 {
-    /** @var DeploymentRepositoryInterface */
-    private $deploymentRepository;
+    /** @var LoginInitiator */
+    private $loginInitiator;
 
-    /** @var KeyChainRepositoryInterface */
-    private $keyChainRepository;
-
-    public function __construct(
-        DeploymentRepositoryInterface $repository,
-        KeyChainRepositoryInterface $keyChainRepository
-    ) {
-        $this->deploymentRepository = $repository;
-        $this->keyChainRepository = $keyChainRepository;
+    public function __construct(LoginInitiator $loginInitiator)
+    {
+        $this->loginInitiator = $loginInitiator;
     }
 
     public function __invoke(Request $request): RedirectResponse
     {
-        // request
-        $iss = $request->get('iss');                         // todo: validate as required
-        $loginHint = $request->get('login_hint');            // todo: validate as required
-        $targetLinkUri = $request->get('target_link_uri');   // todo: validate as required
-        $ltiMessageHint = $request->get('lti_message_hint');
+        $request = new LoginInitiationRequest(
+            $this->getRequestParameter($request, 'iss'),
+            $this->getRequestParameter($request, 'login_hint'),
+            $this->getRequestParameter($request, 'target_link_uri'),
+            $this->getRequestParameter($request, 'lti_message_hint', false),
+            $this->getRequestParameter($request, 'lti_deployment_id', false),
+            $this->getRequestParameter($request, 'client_id', false)
+        );
 
-        // time controls
-        $timestamp = Carbon::now()->getTimestamp();
-        $ttl = 3600;
-        $nonce = Uuid::uuid4();
+        try {
+            $response = $this->loginInitiator->initiate($request);
+        } catch (LtiExceptionInterface $exception) {
+            throw new UnauthorizedHttpException('LTI1p3', $exception->getMessage(), $exception);
+        }
 
-        // find registration
-        $deployment = $this->deploymentRepository->findByIssuer($iss);
-        $keyChains = $this->keyChainRepository->findByIdentifier($deployment->getTool()->getId());
+        return new RedirectResponse($response ->__toString());
+    }
 
-        // state
-        $params = [
-            'utf8' => true,
-            'iss' => $iss,
-            'login_hint' => $loginHint,
-            'target_link_uri' => $targetLinkUri,
-            'lti_message_hint' => $ltiMessageHint
-        ];
+    private function getRequestParameter(Request $request, string $parameterName, bool $isRequired = true): ?string
+    {
+        $parameterValue = $request->get($parameterName);
 
-        $token = (new Builder())
-            ->identifiedBy(Uuid::uuid4())
-            ->issuedAt($timestamp)
-            ->expiresAt($timestamp + $ttl)
-            ->issuedBy($deployment->getTool()->getName())
-            ->relatedTo($deployment->getTool()->getOAuth2ClientId())
-            ->permittedFor($deployment->getPlatform()->getOAuth2AccessTokenUrl())
-            ->withClaim('params', $params)
-            ->getToken(new Sha256(), current($keyChains)->getPrivateKey());
+        if ($isRequired && null === $parameterValue) {
+            throw new BadRequestHttpException(
+                sprintf('Parameter %s is required', $parameterName)
+            );
+        }
 
-
-        $authParams = [
-            'response_type' => 'id_token',
-            'redirect_uri' => $targetLinkUri,
-            'response_mode' => 'form_post',
-            'client_id' => $deployment->getTool()->getOAuth2ClientId(),
-            'scope' => 'openid',
-            'state' => $token->__toString(),
-            'login_hint' => $loginHint,
-            'lti_message_hint' => $ltiMessageHint,
-            'prompt' => 'none',
-            'nonce' => $nonce->toString()
-        ];
-
-        return new RedirectResponse(sprintf(
-            '%s?%s',
-            $deployment->getPlatform()->getOidcAuthenticationUrl(),
-            http_build_query($authParams)
-        ));
+        return $parameterValue;
     }
 }

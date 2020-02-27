@@ -25,15 +25,15 @@ namespace App\Lti\Core\Security\Nonce;
 use Carbon\Carbon;
 use DateTimeInterface;
 
-class Nonce
+class Nonce implements NonceInterface
 {
     /** @var string */
     private $value;
 
-    /** @var DateTimeInterface */
+    /** @var DateTimeInterface|null */
     private $expiredAt;
 
-    public function __construct(string $value, DateTimeInterface $expiredAt)
+    public function __construct(string $value, DateTimeInterface $expiredAt = null)
     {
         $this->value = $value;
         $this->expiredAt = $expiredAt;
@@ -44,7 +44,7 @@ class Nonce
         return $this->value;
     }
 
-    public function getExpiredAt(): DateTimeInterface
+    public function getExpiredAt(): ?DateTimeInterface
     {
         return $this->expiredAt;
     }

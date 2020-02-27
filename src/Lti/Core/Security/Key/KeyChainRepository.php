@@ -24,25 +24,41 @@ namespace App\Lti\Core\Security\Key;
 
 class KeyChainRepository implements KeyChainRepositoryInterface
 {
-    /** @var KeyChain[][] */
-    private $chains;
+    /** @var KeyChainInterface[] */
+    private $keyChains;
 
-    public function __construct(array $chains = [])
+    public function __construct(array $keyChains = [])
     {
-        foreach ($chains as $identifier => $chain) {
-            $this->add($identifier, $chain);
+        foreach ($keyChains as $keyChain) {
+            $this->add($keyChain);
         }
     }
 
-    public function add(string $identifier, KeyChain $chain): self
+    public function add(KeyChainInterface $keyChain): self
     {
-        $this->chains[$identifier][] = $chain;
+        $this->keyChains[$keyChain->getId()] = $keyChain;
 
         return $this;
     }
 
-    public function findByIdentifier(string $identifier): array
+    public function find(string $id): ?KeyChainInterface
     {
-        return $this->chains[$identifier] ?? [];
+        return $this->keyChains[$id] ?? null;
+    }
+
+    /**
+     * @return KeyChainInterface[]
+     */
+    public function findByGroup(string $group): array
+    {
+        $result = [];
+
+        foreach ($this->keyChains as $keyChain) {
+            if ($keyChain->getGroup() === $group) {
+                $result[$keyChain->getId()] = $keyChain;
+            }
+        }
+
+        return $result;
     }
 }

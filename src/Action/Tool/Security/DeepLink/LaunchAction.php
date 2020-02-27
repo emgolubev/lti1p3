@@ -22,24 +22,60 @@ declare(strict_types=1);
 
 namespace App\Action\Tool\Security\DeepLink;
 
-use Lcobucci\JWT\Parser;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Lti\Core\Exception\LtiException;
+use App\Lti\Core\Message\MessageLaunchFactory;
+use App\Lti\Core\Security\Message\MessageLaunchValidator;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class LaunchAction
 {
-    /** @var Parser */
-    private $parser;
+    /** @var Environment */
+    private $twig;
 
-    public function __construct(Parser $parser)
-    {
-        $this->parser = $parser;
+    /** @var MessageLaunchFactory */
+    private $messageLaunchFactory;
+
+    /** @var MessageLaunchValidator */
+    private $messageLaunchValidator;
+
+    public function __construct(
+        Environment $twig,
+        MessageLaunchFactory $launchFactory,
+        MessageLaunchValidator $launchValidator
+    ) {
+        $this->twig = $twig;
+        $this->messageLaunchFactory = $launchFactory;
+        $this->messageLaunchValidator = $launchValidator;
     }
 
-    public function __invoke(Request $request): JsonResponse
+    /**
+     * @throws LtiException
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function __invoke(Request $request): Response
     {
-        $idToken = $this->parser->parse($request->get('id_token'));
+        // launch construction
+        $launch = $this->messageLaunchFactory->create(
+            $request->get('id_token'),
+            $request->get('state'))
+        ;
 
-        return new JsonResponse($idToken->getClaims());
+        // launch validation
+        $launchValidationResult = $this->messageLaunchValidator->validate($launch);
+
+        // launch rendering
+        return new Response(
+            $this->twig->render('tool/messageLaunchResult.html.twig', [
+                'launch' => $launch,
+                'launchValidationResult' => $launchValidationResult,
+            ])
+        );
     }
 }

@@ -24,6 +24,8 @@ namespace App\Lti\Core\Security\Key;
 
 interface KeyChainRepositoryInterface
 {
-    /** @return KeyChain[] */
-    public function findByIdentifier(string $identifier): array;
+    public function find(string $id): ?KeyChainInterface;
+
+    /** @return KeyChainInterface[] */
+    public function findByGroup(string $group): array;
 }

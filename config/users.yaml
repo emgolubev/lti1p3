@@ -1,0 +1,26 @@
+parameters:
+    users:
+        lion:
+            name: Lion
+            email: lion@animal.com
+            givenName: Leo
+            familyName: King
+            middleName: ~
+            locale: fr-fr
+            picture: https://cdn4.iconfinder.com/data/icons/animal-2-1/115/animal-07-512.png
+        bear:
+            name: Bear
+            email: bear@animal.com
+            givenName: Teddy
+            familyName: Woods
+            middleName: ~
+            locale: fr-fr
+            picture: https://cdn1.iconfinder.com/data/icons/animal-and-birds-1/48/40-512.png
+        frog:
+            name: Frog
+            email: frog@animal.com
+            givenName: Kermit
+            familyName: De la Frog
+            middleName: ~
+            locale: fr-fr
+            picture: https://cdn1.iconfinder.com/data/icons/animal-and-birds-1/48/67-512.png

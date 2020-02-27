@@ -20,9 +20,9 @@
 
 declare(strict_types=1);
 
-namespace App\Lti\Core\Security\Jwks;
+namespace App\Lti\Core\Tool;
 
-interface JwksAwareInterface
+interface ToolRepositoryInterface
 {
-    public function getJwksUrl(): string;
+    public function find(string $id): ?ToolInterface;
 }

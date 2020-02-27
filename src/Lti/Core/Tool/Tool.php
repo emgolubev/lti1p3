@@ -39,23 +39,18 @@ class Tool implements ToolInterface
     /** @var string */
     private $oidcLoginInitiationUrl;
 
-    /** @var string */
-    private $jwksUrl;
-
     public function __construct(
         string $id,
         string $name,
         string $oAuth2ClientId,
         string $deepLaunchUrl,
-        string $oidcLoginInitiationUrl,
-        string $jwksUrl
+        string $oidcLoginInitiationUrl
     ) {
         $this->id = $id;
         $this->name = $name;
         $this->oAuth2ClientId = $oAuth2ClientId;
         $this->deepLaunchUrl = $deepLaunchUrl;
         $this->oidcLoginInitiationUrl = $oidcLoginInitiationUrl;
-        $this->jwksUrl = $jwksUrl;
     }
 
 
@@ -82,10 +77,5 @@ class Tool implements ToolInterface
     public function getOidcLoginInitiationUrl(): string
     {
         return $this->oidcLoginInitiationUrl;
-    }
-
-    public function getJwksUrl(): string
-    {
-        return $this->jwksUrl;
     }
 }

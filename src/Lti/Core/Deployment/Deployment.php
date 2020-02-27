@@ -36,11 +36,24 @@ class Deployment implements DeploymentInterface
     /** @var ToolInterface */
     private $tool;
 
-    public function __construct(string $id, PlatformInterface $platform, ToolInterface $tool)
-    {
+    /** @var DeploymentContextInterface */
+    private $platformContext;
+
+    /** @var DeploymentContextInterface */
+    private $toolContext;
+
+    public function __construct(
+        string $id,
+        PlatformInterface $platform,
+        ToolInterface $tool,
+        DeploymentContextInterface $platformContext,
+        DeploymentContextInterface $toolContext
+    ) {
         $this->id = $id;
         $this->platform = $platform;
         $this->tool = $tool;
+        $this->platformContext = $platformContext;
+        $this->toolContext = $toolContext;
     }
 
     public function getId(): string
@@ -56,5 +69,15 @@ class Deployment implements DeploymentInterface
     public function getTool(): ToolInterface
     {
         return $this->tool;
+    }
+
+    public function getPlatformContext(): DeploymentContextInterface
+    {
+        return $this->platformContext;
+    }
+
+    public function getToolContext(): DeploymentContextInterface
+    {
+        return $this->toolContext;
     }
 }

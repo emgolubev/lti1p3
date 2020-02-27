@@ -23,9 +23,11 @@ declare(strict_types=1);
 namespace App\Lti\Builder;
 
 use App\Lti\Core\Deployment\Deployment;
+use App\Lti\Core\Deployment\DeploymentContext;
 use App\Lti\Core\Deployment\DeploymentRepository;
-use App\Lti\Core\Platform\Platform;
-use App\Lti\Core\Tool\Tool;
+use App\Lti\Core\Platform\PlatformRepositoryInterface;
+use App\Lti\Core\Security\Key\KeyChainRepositoryInterface;
+use App\Lti\Core\Tool\ToolRepositoryInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class DeploymentRepositoryBuilder
@@ -33,65 +35,49 @@ class DeploymentRepositoryBuilder
     /** @var ParameterBagInterface */
     private $parameterBag;
 
-    public function __construct(ParameterBagInterface $parameterBag)
-    {
+    /** @var PlatformRepositoryInterface */
+    private $platformRepository;
+
+    /** @var ToolRepositoryInterface */
+    private $toolRepository;
+
+    /** @var KeyChainRepositoryInterface */
+    private $keyChainRepository;
+
+    public function __construct(
+        ParameterBagInterface $parameterBag,
+        PlatformRepositoryInterface $platformRepository,
+        ToolRepositoryInterface $toolRepository,
+        KeyChainRepositoryInterface $keyChainRepository
+    ) {
         $this->parameterBag = $parameterBag;
+        $this->platformRepository = $platformRepository;
+        $this->toolRepository = $toolRepository;
+        $this->keyChainRepository = $keyChainRepository;
     }
 
     public function build(): DeploymentRepository
     {
         $repository = new DeploymentRepository();
 
-        $platforms = $this->buildPlatforms();
-        $tools = $this->buildTools();
-
-        foreach ($this->parameterBag->get('deployments') as $identifier => $deployment) {
+        foreach ($this->parameterBag->get('deployments') as $identifier => $data) {
             $repository->add(
                 new Deployment(
                     $identifier,
-                    $platforms[$deployment['platform']],
-                    $tools[$deployment['tool']]
+                    $this->platformRepository->find($data['platform']['id']),
+                    $this->toolRepository->find($data['tool']['id']),
+                    new DeploymentContext(
+                        $this->keyChainRepository->find($data['platform']['keyChain'] ?? ''),
+                        $data['platform']['jwksUrl'] ?? null
+                    ),
+                    new DeploymentContext(
+                        $this->keyChainRepository->find($data['tool']['keyChain'] ?? ''),
+                        $data['tool']['jwksUrl'] ?? null
+                    )
                 )
             );
         }
 
         return $repository;
-    }
-
-    private function buildPlatforms(): array
-    {
-        $platforms = [];
-
-        foreach ($this->parameterBag->get('platforms') as $identifier => $data) {
-            $platforms[$identifier] = new Platform(
-                $identifier,
-                $data['name'],
-                $data['audience'],
-                $data['oAuth2ClientId'],
-                $data['oAuth2AccessTokenUrl'],
-                $data['oidcAuthUrl'],
-                $data['jwksUrl']
-            );
-        }
-
-        return $platforms;
-    }
-
-    private function buildTools(): array
-    {
-        $tools = [];
-
-        foreach ($this->parameterBag->get('tools') as $identifier => $data) {
-            $tools[$identifier] = new Tool(
-                $identifier,
-                $data['name'],
-                $data['oAuth2ClientId'],
-                $data['deepLaunchUrl'],
-                $data['oidcLoginInitiationUrl'],
-                $data['jwksUrl']
-            );
-        }
-
-        return $tools;
     }
 }

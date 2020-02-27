@@ -22,9 +22,7 @@ declare(strict_types=1);
 
 namespace App\Lti\Core\Tool;
 
-use App\Lti\Core\Security\Jwks\JwksAwareInterface;
-
-interface ToolInterface extends JwksAwareInterface
+interface ToolInterface
 {
     public function getId(): string;
 

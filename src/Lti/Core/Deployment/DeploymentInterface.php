@@ -32,4 +32,8 @@ interface DeploymentInterface
     public function getPlatform(): PlatformInterface;
 
     public function getTool(): ToolInterface;
+
+    public function getPlatformContext(): DeploymentContextInterface;
+
+    public function getToolContext(): DeploymentContextInterface;
 }

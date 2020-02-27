@@ -1,0 +1,8 @@
+<form id="auto_submit" action="{{ redirectUri }}" method="POST">
+    <input type="hidden" name="id_token" value="{{ idToken }}" />
+    <input type="hidden" name="state" value="{{ state }}" />
+</form>
+
+<script>
+    document.getElementById('auto_submit').submit();
+</script>

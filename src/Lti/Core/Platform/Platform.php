@@ -42,17 +42,13 @@ class Platform implements PlatformInterface
     /** @var string */
     private $oidcAuthenticationUrl;
 
-    /** @var string */
-    private $jwksUrl;
-
     public function __construct(
         string $id,
         string $name,
         string $audience,
         string $oAuth2ClientId,
         string $oAuth2AccessTokenUrl,
-        string $oidcAuthenticationUrl,
-        string $jwksUrl
+        string $oidcAuthenticationUrl
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -60,7 +56,6 @@ class Platform implements PlatformInterface
         $this->oAuth2ClientId = $oAuth2ClientId;
         $this->oAuth2AccessTokenUrl = $oAuth2AccessTokenUrl;
         $this->oidcAuthenticationUrl = $oidcAuthenticationUrl;
-        $this->jwksUrl = $jwksUrl;
     }
 
     public function getId(): string
@@ -91,10 +86,5 @@ class Platform implements PlatformInterface
     public function getOidcAuthenticationUrl(): string
     {
         return $this->oidcAuthenticationUrl;
-    }
-
-    public function getJwksUrl(): string
-    {
-        return $this->jwksUrl;
     }
 }

@@ -24,10 +24,13 @@ namespace App\Lti\Core\Security\Key;
 
 use Lcobucci\JWT\Signer\Key;
 
-class KeyChain
+class KeyChain implements KeyChainInterface
 {
     /** @var string */
     private $id;
+
+    /** @var string */
+    private $group;
 
     /** @var string */
     private $publicKey;
@@ -40,11 +43,13 @@ class KeyChain
 
     public function __construct(
         string $id,
+        string $group,
         string $publicKey,
         string $privateKey = null,
         string $privateKeyPassPhrase = null
     ) {
         $this->id = $id;
+        $this->group = $group;
         $this->publicKey = $publicKey;
         $this->privateKey = $privateKey;
         $this->privateKeyPassPhrase = $privateKeyPassPhrase;
@@ -55,13 +60,20 @@ class KeyChain
         return $this->id;
     }
 
+    public function getGroup(): string
+    {
+        return $this->group;
+    }
+
     public function getPublicKey(): Key
     {
         return new Key($this->publicKey);
     }
 
-    public function getPrivateKey(): Key
+    public function getPrivateKey(): ?Key
     {
-        return new Key($this->privateKey, $this->privateKeyPassPhrase);
+        return null !== $this->privateKey
+            ? new Key($this->privateKey, $this->privateKeyPassPhrase)
+            : null;
     }
 }
