@@ -63,7 +63,7 @@ class DeploymentRepositoryBuilder
         foreach ($this->parameterBag->get('deployments') as $identifier => $data) {
             $repository->add(
                 new Deployment(
-                    $identifier,
+                    (string)$identifier,
                     $this->platformRepository->find($data['platform']['id']),
                     $this->toolRepository->find($data['tool']['id']),
                     new DeploymentContext(

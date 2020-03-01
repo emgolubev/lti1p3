@@ -1,5 +1,11 @@
 parameters:
     platforms:
+        moodleDemoCloud:
+            name: "Moodle demo cloud"
+            audience: "https://taodemo.moodlecloud.com"
+            oAuth2ClientId: "hYhw82beq2NjEyH"
+            oAuth2AccessTokenUrl: "https://taodemo.moodlecloud.com/mod/lti/token.php"
+            oidcAuthUrl: "https://taodemo.moodlecloud.com/mod/lti/auth.php"
         imsCertPlatform:
             name: "IMS Demo Platform #768"
             audience: "https://lti-ri.imsglobal.org"
@@ -29,6 +35,11 @@ parameters:
             oAuth2ClientId: "12345"
             deepLaunchUrl: "http://localhost:8000/tool/deep-link/launch"
             oidcLoginInitiationUrl: "http://localhost:8000/tool/oidc/login-initiation"
+        myLocalToolForMoodle:
+            name: "My Local Tool for moodle"
+            oAuth2ClientId: "hYhw82beq2NjEyH"
+            deepLaunchUrl: "http://localhost:8000/tool/deep-link/launch"
+            oidcLoginInitiationUrl: "http://localhost:8000/tool/oidc/login-initiation"
     keyChains:
         myKeySet1:
             kid1:
@@ -41,6 +52,15 @@ parameters:
                 privateKey: "file://%kernel.project_dir%/config/keys/platform/private.key"
                 privateKeyPassPhrase: ~
     deployments:
+        1:
+            platform:
+                id: "moodleDemoCloud"
+                keyChain: ~
+                jwksUrl: "https://taodemo.moodlecloud.com/mod/lti/certs.php"
+            tool:
+                id: "myLocalToolForMoodle"
+                keyChain: "kid1"
+                jwksUrl: "http://localhost:8000/lti/myKeySet1/.well-know/jwks.json"
         imsPlatformDeploy:
             platform:
                 id: "imsCertPlatform"
@@ -68,7 +88,7 @@ parameters:
                 id: "myLocalTool"
                 keyChain: "kid1"
                 jwksUrl: "http://localhost:8000/lti/myKeySet1/.well-know/jwks.json"
-        69027c5b-9b68-47ee-bc97-3725d7edf054:
+        da813c03-be59-4755-bfc1-023356d14960:
             platform:
                 id: "ltiLauncher"
                 keyChain: ~
