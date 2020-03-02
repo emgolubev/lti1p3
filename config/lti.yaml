@@ -16,8 +16,8 @@ parameters:
             name: "My local platform"
             audience: "myLocalPlatform"
             oAuth2ClientId: "12345"
-            oAuth2AccessTokenUrl: "http://localhost:8000/platform/oauth2/access-token"
-            oidcAuthUrl: "http://localhost:8000/platform/oidc/authorization"
+            oAuth2AccessTokenUrl: "http://localhost:8008/platform/oauth2/access-token"
+            oidcAuthUrl: "http://localhost:8008/platform/oidc/authorization"
         ltiLauncher:
             name: "LTI Launcher"
             audience: "lti_launcher"
@@ -33,13 +33,13 @@ parameters:
         myLocalTool:
             name: "My Local Tool"
             oAuth2ClientId: "12345"
-            deepLaunchUrl: "http://localhost:8000/tool/deep-link/launch"
-            oidcLoginInitiationUrl: "http://localhost:8000/tool/oidc/login-initiation"
+            deepLaunchUrl: "http://localhost:8008/tool/deep-link/launch"
+            oidcLoginInitiationUrl: "http://localhost:8008/tool/oidc/login-initiation"
         myLocalToolForMoodle:
             name: "My Local Tool for moodle"
             oAuth2ClientId: "hYhw82beq2NjEyH"
-            deepLaunchUrl: "http://localhost:8000/tool/deep-link/launch"
-            oidcLoginInitiationUrl: "http://localhost:8000/tool/oidc/login-initiation"
+            deepLaunchUrl: "http://localhost:8008/tool/deep-link/launch"
+            oidcLoginInitiationUrl: "http://localhost:8008/tool/oidc/login-initiation"
     keyChains:
         myKeySet1:
             kid1:
@@ -60,7 +60,7 @@ parameters:
             tool:
                 id: "myLocalToolForMoodle"
                 keyChain: "kid1"
-                jwksUrl: "http://localhost:8000/lti/myKeySet1/.well-know/jwks.json"
+                jwksUrl: "http://localhost:8008/lti/myKeySet1/.well-know/jwks.json"
         imsPlatformDeploy:
             platform:
                 id: "imsCertPlatform"
@@ -69,7 +69,7 @@ parameters:
             tool:
                 id: "myLocalTool"
                 keyChain: "kid1"
-                jwksUrl: "http://localhost:8000/lti/myKeySet1/.well-know/jwks.json"
+                jwksUrl: "http://localhost:8008/lti/myKeySet1/.well-know/jwks.json"
         imsToolDeploy:
             platform:
                 id: "myLocalPlatform"
@@ -78,16 +78,16 @@ parameters:
             tool:
                 id: "imsCertTool"
                 keyChain: "kid1"
-                jwksUrl: "http://localhost:8000/lti/myKeySet1/.well-know/jwks.json"
+                jwksUrl: "http://localhost:8008/lti/myKeySet1/.well-know/jwks.json"
         localToolDeploy:
             platform:
                 id: "myLocalPlatform"
                 keyChain: "kid2"
-                jwksUrl: "http://localhost:8000/lti/myKeySet2/.well-know/jwks.json"
+                jwksUrl: "http://localhost:8008/lti/myKeySet2/.well-know/jwks.json"
             tool:
                 id: "myLocalTool"
                 keyChain: "kid1"
-                jwksUrl: "http://localhost:8000/lti/myKeySet1/.well-know/jwks.json"
+                jwksUrl: "http://localhost:8008/lti/myKeySet1/.well-know/jwks.json"
         da813c03-be59-4755-bfc1-023356d14960:
             platform:
                 id: "ltiLauncher"
@@ -96,7 +96,7 @@ parameters:
             tool:
                 id: "myLocalTool"
                 keyChain: "kid1"
-                jwksUrl: "http://localhost:8000/lti/myKeySet1/.well-know/jwks.json"
+                jwksUrl: "http://localhost:8008/lti/myKeySet1/.well-know/jwks.json"
 
 
 

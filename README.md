@@ -2,19 +2,18 @@
 
 > LTI 1.3 prototype implementation
 
-## Installation
+## Installation with symfony cli (with PHP installed locally)
 
-Install dependencies with [composer](https://getcomposer.org/download/):
+First, install [symfony installer](https://symfony.com/download).
+
+Then, install dependencies with [composer](https://getcomposer.org/download/):
 ```bash
-# composer install
+$ composer install
 ```
 
-**Note**: if you don't have PHP locallly, you can use the [docker composer official image](https://hub.docker.com/_/composer) to proceed to the installlation.
-
-Then start the  application with [docker-compose](https://docs.docker.com/compose/)
-
+Then, start the symfony local web server: 
 ```bash
-# docker-compose up -d
+$ symfony server:start --port 8008
 ```
 
 **Note**: the application will be accessible on [http://localhost:8008](http://localhost:8008)
@@ -22,7 +21,32 @@ Then start the  application with [docker-compose](https://docs.docker.com/compos
 You can then list the available endpoints:
 
 ```bash
-# docker exec -it lti1p3_phpfpm bin/console debug:router
+$ bin/console debug:router
+```
+
+## Installation with docker (without PHP installed locally)
+
+Install dependencies with [composer docker image](https://hub.docker.com/_/composer):
+```bash
+$ docker run --rm --interactive --tty \
+    --volume $PWD:/app \
+    composer install
+```
+
+**Note**: if you don't have PHP locally, you can use the [docker composer official image](https://hub.docker.com/_/composer) to proceed to the installlation.
+
+Then start the  application with [docker-compose](https://docs.docker.com/compose/)
+
+```bash
+$ docker-compose up -d
+```
+
+**Note**: the application will be accessible on [http://localhost:8008](http://localhost:8008)
+
+You can then list the available endpoints:
+
+```bash
+$ docker exec -it lti1p3_phpfpm bin/console debug:router
 ```
 
 
