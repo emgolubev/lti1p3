@@ -1,7 +1,7 @@
-FROM php:7.3-fpm
+FROM php:7.4-fpm
 
 RUN apt-get update && \
-    apt-get install -y libpng-dev libjpeg-dev libpq-dev zip unzip sudo wget zlib1g-dev libicu-dev libzip-dev libzstd-dev g++ && \
+    apt-get install -y libonig-dev libpng-dev libjpeg-dev libpq-dev zip unzip sudo wget zlib1g-dev libicu-dev libzip-dev libzstd-dev && \
     rm -rf /var/lib/apt/lists/*
 
 RUN yes | pecl install igbinary redis
