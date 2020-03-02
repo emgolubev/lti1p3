@@ -73,11 +73,11 @@ parameters:
         imsToolDeploy:
             platform:
                 id: "myLocalPlatform"
-                keyChain: "kid2"
-                jwksUrl: "http://localhost:8000/lti/myKeySet2/.well-know/jwks.json"
+                keyChain: "kid1"
+                jwksUrl: "http://35bedd79.ngrok.io/lti/myKeySet1/.well-know/jwks.json"
             tool:
                 id: "imsCertTool"
-                keyChain: "kid2"
+                keyChain: "kid1"
                 jwksUrl: "http://localhost:8000/lti/myKeySet1/.well-know/jwks.json"
         localToolDeploy:
             platform:
