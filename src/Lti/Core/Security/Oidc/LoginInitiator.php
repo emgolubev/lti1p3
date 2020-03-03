@@ -73,7 +73,7 @@ class LoginInitiator
                 'response_type' => 'id_token',
                 'redirect_uri' => $request->getTargetLinkUri(),
                 'response_mode' => 'form_post',
-                'client_id' => $deployment->getTool()->getOAuth2ClientId(),
+                'client_id' => $deployment->getOAuth2ClientId(),
                 'scope' => 'openid',
                 'state' => $this->stateGenerator->generate($deployment, $request),
                 'login_hint' => $request->getLoginHint(),

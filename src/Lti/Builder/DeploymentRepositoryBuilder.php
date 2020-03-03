@@ -64,6 +64,7 @@ class DeploymentRepositoryBuilder
             $repository->add(
                 new Deployment(
                     (string)$identifier,
+                    (string)$data['oAuth2ClientId'],
                     $this->platformRepository->find($data['platform']['id']),
                     $this->toolRepository->find($data['tool']['id']),
                     new DeploymentContext(

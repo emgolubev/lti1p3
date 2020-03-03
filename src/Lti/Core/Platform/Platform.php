@@ -34,9 +34,6 @@ class Platform implements PlatformInterface
     private $audience;
 
     /** @var string */
-    private $oAuth2ClientId;
-
-    /** @var string */
     private $oAuth2AccessTokenUrl;
 
     /** @var string */
@@ -46,14 +43,12 @@ class Platform implements PlatformInterface
         string $id,
         string $name,
         string $audience,
-        string $oAuth2ClientId,
         string $oAuth2AccessTokenUrl,
         string $oidcAuthenticationUrl
     ) {
         $this->id = $id;
         $this->name = $name;
         $this->audience = $audience;
-        $this->oAuth2ClientId = $oAuth2ClientId;
         $this->oAuth2AccessTokenUrl = $oAuth2AccessTokenUrl;
         $this->oidcAuthenticationUrl = $oidcAuthenticationUrl;
     }
@@ -71,11 +66,6 @@ class Platform implements PlatformInterface
     public function getAudience(): string
     {
         return $this->audience;
-    }
-
-    public function getOAuth2ClientId(): string
-    {
-        return $this->oAuth2ClientId;
     }
 
     public function getOAuth2AccessTokenUrl(): string

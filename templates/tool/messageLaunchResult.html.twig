@@ -151,6 +151,8 @@
                             <dl class="list-unstyled">
                                 <dt>ID</dt>
                                 <dd><code>{{ launch.deployment.id }}</code></dd>
+                                <dt>OAuth2 Client ID</dt>
+                                <dd>{{ launch.deployment.oAuth2ClientId }}</dd>
                                 <dt>Platform Jwks Url</dt>
                                 <dd><a target="_blank" href="{{ launch.deployment.platformContext.jwksUrl }}">{{ launch.deployment.platformContext.jwksUrl|default('n/a') }}</a></dd>
                                 <dt>Tool Jwks Url</dt>
@@ -168,8 +170,6 @@
                                     <dd>{{ launch.deployment.platform.name }}</dd>
                                     <dt>Audience</dt>
                                     <dd>{{ launch.deployment.platform.audience }}</dd>
-                                    <dt>OAuth2 Client ID</dt>
-                                    <dd>{{ launch.deployment.platform.oAuth2ClientId }}</dd>
                                     <dt>OAuth2 Access Token Url</dt>
                                     <dd><a target="_blank" href="{{ launch.deployment.platform.oAuth2AccessTokenUrl }}">{{ launch.deployment.platform.oAuth2AccessTokenUrl }}</a></dd>
                                     <dt>OIDC Auth Url</dt>
@@ -186,8 +186,6 @@
                                     <dd><code>{{ launch.deployment.tool.id }}</code></dd>
                                     <dt>Name</dt>
                                     <dd>{{ launch.deployment.tool.name }}</dd>
-                                    <dt>OAuth2 Client ID</dt>
-                                    <dd>{{ launch.deployment.tool.oAuth2ClientId }}</dd>
                                     <dt>Deep Launch Url</dt>
                                     <dd><a target="_blank" href="{{ launch.deployment.tool.deepLaunchUrl }}">{{ launch.deployment.tool.deepLaunchUrl }}</a></dd>
                                     <dt>OIDC Login Initiation Url</dt>

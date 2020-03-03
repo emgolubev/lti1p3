@@ -30,8 +30,6 @@ interface PlatformInterface
 
     public function getAudience(): string;
 
-    public function getOAuth2ClientId(): string;
-
     public function getOAuth2AccessTokenUrl(): string;
 
     public function getOidcAuthenticationUrl(): string;

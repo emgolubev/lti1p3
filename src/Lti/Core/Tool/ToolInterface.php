@@ -28,8 +28,6 @@ interface ToolInterface
 
     public function getName(): string;
 
-    public function getOAuth2ClientId(): string;
-
     public function getDeepLaunchUrl(): string;
 
     public function getOidcLoginInitiationUrl(): string;

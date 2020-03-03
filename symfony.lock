@@ -9,7 +9,7 @@
         "version": "2.30.0"
     },
     "php": {
-        "version": "7.4"
+        "version": "7.3"
     },
     "phpseclib/phpseclib": {
         "version": "2.0.25"

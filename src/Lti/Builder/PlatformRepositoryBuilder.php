@@ -47,7 +47,6 @@ class PlatformRepositoryBuilder
                     $id,
                     $data['name'],
                     $data['audience'],
-                    $data['oAuth2ClientId'],
                     $data['oAuth2AccessTokenUrl'],
                     $data['oidcAuthUrl']
                 )

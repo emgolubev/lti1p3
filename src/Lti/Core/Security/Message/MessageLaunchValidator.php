@@ -223,7 +223,7 @@ class MessageLaunchValidator
      */
     private function validateAudience(MessageLaunchInterface $launch, MessageLaunchValidationResult $result): self
     {
-        if ($launch->getDeployment()->getTool()->getOAuth2ClientId() != $launch->getToken()->getClaim(MessageLaunchInterface::CLAIM_AUD)) {
+        if ($launch->getDeployment()->getOAuth2ClientId() != $launch->getToken()->getClaim(MessageLaunchInterface::CLAIM_AUD)) {
             $result->addFailure('JWT token aud claim does not match tool oauth2 client id');
         } else {
             $result->addSuccess('JWT token aud claim issuer matches tool oauth2 client id');

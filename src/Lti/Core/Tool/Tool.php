@@ -31,9 +31,6 @@ class Tool implements ToolInterface
     private $name;
 
     /** @var string */
-    private $oAuth2ClientId;
-
-    /** @var string */
     private $deepLaunchUrl;
 
     /** @var string */
@@ -42,13 +39,11 @@ class Tool implements ToolInterface
     public function __construct(
         string $id,
         string $name,
-        string $oAuth2ClientId,
         string $deepLaunchUrl,
         string $oidcLoginInitiationUrl
     ) {
         $this->id = $id;
         $this->name = $name;
-        $this->oAuth2ClientId = $oAuth2ClientId;
         $this->deepLaunchUrl = $deepLaunchUrl;
         $this->oidcLoginInitiationUrl = $oidcLoginInitiationUrl;
     }
@@ -62,11 +57,6 @@ class Tool implements ToolInterface
     public function getName(): string
     {
         return $this->name;
-    }
-
-    public function getOAuth2ClientId(): string
-    {
-        return $this->oAuth2ClientId;
     }
 
     public function getDeepLaunchUrl(): string

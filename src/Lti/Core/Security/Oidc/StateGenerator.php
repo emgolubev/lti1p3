@@ -55,7 +55,7 @@ class StateGenerator implements StateGeneratorInterface
             ->issuedAt($timestamp)
             ->expiresAt($timestamp + $this->ttl)
             ->issuedBy($deployment->getTool()->getName())
-            ->relatedTo($deployment->getTool()->getOAuth2ClientId())
+            ->relatedTo($deployment->getOAuth2ClientId())
             ->permittedFor($deployment->getPlatform()->getOAuth2AccessTokenUrl())
             ->withClaim('params', [
                     'utf8' => true,

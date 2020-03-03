@@ -46,7 +46,6 @@ class ToolRepositoryBuilder
                 new Tool(
                     $id,
                     $data['name'],
-                    $data['oAuth2ClientId'],
                     $data['deepLaunchUrl'],
                     $data['oidcLoginInitiationUrl']
                 )

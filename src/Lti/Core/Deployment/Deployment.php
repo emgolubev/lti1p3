@@ -30,6 +30,9 @@ class Deployment implements DeploymentInterface
     /** @var string */
     private $id;
 
+    /** @var string */
+    private $oAuth2ClientId;
+
     /** @var PlatformInterface */
     private $platform;
 
@@ -44,12 +47,14 @@ class Deployment implements DeploymentInterface
 
     public function __construct(
         string $id,
+        string $oAuth2ClientId,
         PlatformInterface $platform,
         ToolInterface $tool,
         DeploymentContextInterface $platformContext,
         DeploymentContextInterface $toolContext
     ) {
         $this->id = $id;
+        $this->oAuth2ClientId = $oAuth2ClientId;
         $this->platform = $platform;
         $this->tool = $tool;
         $this->platformContext = $platformContext;
@@ -59,6 +64,11 @@ class Deployment implements DeploymentInterface
     public function getId(): string
     {
         return $this->id;
+    }
+
+    public function getOAuth2ClientId(): string
+    {
+        return $this->oAuth2ClientId;
     }
 
     public function getPlatform(): PlatformInterface

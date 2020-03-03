@@ -29,6 +29,8 @@ interface DeploymentInterface
 {
     public function getId(): string;
 
+    public function getOAuth2ClientId(): string;
+
     public function getPlatform(): PlatformInterface;
 
     public function getTool(): ToolInterface;

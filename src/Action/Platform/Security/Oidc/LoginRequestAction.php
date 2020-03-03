@@ -64,7 +64,7 @@ class LoginRequestAction
                     'target_link_uri' => $deployment->getTool()->getDeepLaunchUrl(),
                     'lti_message_hint' => $formData['lti_message_hint'],
                     'lti_deployment_id' => $deployment->getId(),
-                    'client_id' => $deployment->getPlatform()->getOAuth2ClientId()
+                    'client_id' => $deployment->getOAuth2ClientId()
                 ])
             );
         }
