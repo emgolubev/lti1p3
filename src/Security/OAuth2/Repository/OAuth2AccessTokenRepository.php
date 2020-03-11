@@ -13,7 +13,17 @@ class OAuth2AccessTokenRepository implements AccessTokenRepositoryInterface
 {
     public function getNewToken(ClientEntityInterface $clientEntity, array $scopes, $userIdentifier = null): AccessTokenEntityInterface
     {
-        return new OAuth2AccessToken();
+        $token = new OAuth2AccessToken();
+
+        $token->setClient($clientEntity);
+
+        foreach ($scopes as $scope) {
+            $token->addScope($scope);
+        }
+
+        $token->setUserIdentifier($userIdentifier);
+
+        return $token;
     }
 
     /**
