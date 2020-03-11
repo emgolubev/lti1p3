@@ -22,18 +22,110 @@ declare(strict_types=1);
 
 namespace App\Action\Platform\Security\OAuth2;
 
+use Lcobucci\JWT\Parser;
+use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use Symfony\Bridge\PsrHttpMessage\HttpFoundationFactoryInterface;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AccessTokenAction
 {
-    public function __invoke(Request $request): JsonResponse
+    /** @var Parser */
+    private $parser;
+
+    /** @var HttpMessageFactoryInterface */
+    private $psr7Factory;
+
+    /** @var HttpFoundationFactoryInterface */
+    private $httpFoundationFactory;
+
+    /** @var AuthorizationServer */
+    private $authorizationServer;
+
+    public function __construct(Parser $parser, HttpMessageFactoryInterface $psr7Factory, HttpFoundationFactoryInterface $httpFoundationFactory, AuthorizationServer $authorizationServer)
     {
-        return new JsonResponse([
-            "scope" =>  "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly https://purl.imsglobal.org/spec/lti-ags/scope/score https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly",
-            "access_token" => "eyJhbGciOiJSUzI1NiIsImtpZCI6IlZVNUJOYVU2a0xZVlV2aWRneTZGbUpoUC1xc2pCSldtUUIwMkNyd2MzMm8ifQ.eyJjdXN0b20iOnt9LCJzY29wZSI6Imh0dHBzOi8vcHVybC5pbXNnbG9iYWwub3JnL3NwZWMvbHRpLWFncy9zY29wZS9saW5laXRlbSBodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL2x0aS1hZ3Mvc2NvcGUvcmVzdWx0LnJlYWRvbmx5IGh0dHBzOi8vcHVybC5pbXNnbG9iYWwub3JnL3NwZWMvbHRpLWFncy9zY29wZS9zY29yZSBodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL2x0aS1ucnBzL3Njb3BlL2NvbnRleHRtZW1iZXJzaGlwLnJlYWRvbmx5IiwiaXNzIjoiaHR0cHM6Ly9sdGktcmkuaW1zZ2xvYmFsLm9yZyIsImF1ZCI6IjEyMzQ1IiwiaWF0IjoxNTgyODIxODgwLCJleHAiOjE1ODI4MjIxODAsInN1YiI6IjE0MTU5MWRiMmRiNGE0N2RlOTYyIiwibm9uY2UiOiIyZWE4NDY4ZDk2ZGVjNmNiNDRkZCIsInBsYXRmb3JtX2lkIjo3MjB9.G2zvjOalQW8wav3grE9vAJ2eU3n0RbsJyu5nFMEhXOS67ttnmwIQ-lLMEZJ4JsSJT-B_xGjKfyYM286End05-jPjEmLlRRkpfN366zhzZQ8h8uqU_ngB6dtvfQIcU6FGI_dUYE3wmbEKR1a31FbxFFMzYM7FbQTeaF60QLXa_ah8HbiFwo2Z1nkGPUYU_iKYb5dUo5MF6ECcKgyN1BpYJEWlceEKYw54DWOqnqnnfMLDovfAuPCe5pvQauadLm1OoMneGAb223QXHK0PCfcAIuiHmvhxfL13kqptk9OxZviWoWMjCFovPwb-zqJN8sEJ2nEuBwj5n1U9LCEWEnzzUA",
-            "token_type" => "Bearer",
-            "expires_in" => 3600
-        ]);
+        $this->parser = $parser;
+        $this->psr7Factory = $psr7Factory;
+        $this->httpFoundationFactory = $httpFoundationFactory;
+        $this->authorizationServer = $authorizationServer;
+    }
+
+    public function __invoke(Request $request): Response
+    {
+        $psr7Response = $this->psr7Factory->createResponse(new Response());
+
+        try {
+            $this->validateParameters($request);
+
+            $this->validateAssertion($request);
+
+            $psr7AuthenticationResponse = $this->authorizationServer->respondToAccessTokenRequest(
+                $this->psr7Factory->createRequest($request),
+                $psr7Response
+            );
+
+            return $this->httpFoundationFactory->createResponse($psr7AuthenticationResponse);
+
+        } catch (BadRequestHttpException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 400);
+        } catch (OAuthServerException $exception) {
+            return $this->httpFoundationFactory->createResponse($exception->generateHttpResponse($psr7Response));
+        }
+    }
+
+    private function getRequestParameter(Request $request, string $parameterName, bool $isRequired = true): ?string
+    {
+        $parameterValue = $request->get($parameterName);
+
+        if ($isRequired && null === $parameterValue) {
+            throw new BadRequestHttpException(
+                sprintf('Parameter %s is required', $parameterName)
+            );
+        }
+
+        return $parameterValue;
+    }
+
+    private function validateParameters(Request $request): void
+    {
+        $grant_type = $this->getRequestParameter($request, 'grant_type');
+        $client_assertion_type = $this->getRequestParameter($request, 'client_assertion_type');
+        $scopes = $this->getRequestParameter($request, 'scope');
+
+        // validation
+        if ('client_credentials' !== $grant_type) {
+            throw new BadRequestHttpException('Only Client credentials grant type is supported');
+        }
+
+        if ('urn:ietf:params:oauth:client-assertion-type:jwt-bearer' !== $client_assertion_type) {
+            throw new BadRequestHttpException('Incorrect client assertion is provided');
+        }
+
+        if (is_string($scopes)) {
+            $scopes = explode(' ', $scopes);
+        }
+
+        // TODO: how validate scopes?
+        // in phpleague we have a method https://github.com/thephpleague/oauth2-server/blob/master/src/Grant/AbstractGrant.php#L288
+    }
+
+    protected function validateAssertion(Request $request): array
+    {
+        $client_assertion = $this->parser->parse($this->getRequestParameter($request, 'client_assertion'));
+
+        // TODO: need validate signature
+        // https://github.com/MilesChou/oauth2-server-jwt-bearer-grant/blob/master/src/JwtBearerGrant.php#L155
+
+        $claims = $client_assertion->getClaims();
+
+        // TODO: validate claims
+        // we can use package "web-token/jwt-checker"
+
+
+        return $claims;
     }
 }
