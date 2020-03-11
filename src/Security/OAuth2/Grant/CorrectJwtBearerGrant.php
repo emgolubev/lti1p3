@@ -32,7 +32,7 @@ class CorrectJwtBearerGrant extends JwtBearerGrant
 
         $claims = $jsonConverter->decode($jwt->getPayload());
 
-//        $this->resolveClaimCheckerManager()->check($claims);
+        $this->resolveClaimCheckerManager()->check($claims);
 
         return $claims;
     }

@@ -31,6 +31,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Throwable;
 
 class AccessTokenAction
 {
@@ -74,19 +75,8 @@ class AccessTokenAction
             return new JsonResponse(['message' => $e->getMessage()], 400);
         } catch (OAuthServerException $exception) {
             return $this->httpFoundationFactory->createResponse($exception->generateHttpResponse($psr7Response));
+        } catch (Throwable $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 500);
         }
     }
-
-//    private function getRequestParameter(Request $request, string $parameterName, bool $isRequired = true): ?string
-//    {
-//        $parameterValue = $request->get($parameterName);
-//
-//        if ($isRequired && null === $parameterValue) {
-//            throw new BadRequestHttpException(
-//                sprintf('Parameter %s is required', $parameterName)
-//            );
-//        }
-//
-//        return $parameterValue;
-//    }
 }
