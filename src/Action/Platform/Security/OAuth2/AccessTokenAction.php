@@ -22,8 +22,8 @@ declare(strict_types=1);
 
 namespace App\Action\Platform\Security\OAuth2;
 
+use App\Lti\Core\Security\OAuth2\OAuth2AccessTokenGenerator;
 use Lcobucci\JWT\Parser;
-use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Symfony\Bridge\PsrHttpMessage\HttpFoundationFactoryInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -43,15 +43,19 @@ class AccessTokenAction
     /** @var HttpFoundationFactoryInterface */
     private $httpFoundationFactory;
 
-    /** @var AuthorizationServer */
-    private $authorizationServer;
+    /**  @var OAuth2AccessTokenGenerator */
+    private $accessTokenGenerator;
 
-    public function __construct(Parser $parser, HttpMessageFactoryInterface $psr7Factory, HttpFoundationFactoryInterface $httpFoundationFactory, AuthorizationServer $authorizationServer)
-    {
+    public function __construct(
+        Parser $parser,
+        HttpMessageFactoryInterface $psr7Factory,
+        HttpFoundationFactoryInterface $httpFoundationFactory,
+        OAuth2AccessTokenGenerator $accessTokenGenerator
+    ) {
         $this->parser = $parser;
         $this->psr7Factory = $psr7Factory;
         $this->httpFoundationFactory = $httpFoundationFactory;
-        $this->authorizationServer = $authorizationServer;
+        $this->accessTokenGenerator = $accessTokenGenerator;
     }
 
     public function __invoke(Request $request): Response
@@ -59,11 +63,7 @@ class AccessTokenAction
         $psr7Response = $this->psr7Factory->createResponse(new Response());
 
         try {
-            $this->validateParameters($request);
-
-            $this->validateAssertion($request);
-
-            $psr7AuthenticationResponse = $this->authorizationServer->respondToAccessTokenRequest(
+            $psr7AuthenticationResponse = $this->accessTokenGenerator->generate(
                 $this->psr7Factory->createRequest($request),
                 $psr7Response
             );
@@ -77,55 +77,16 @@ class AccessTokenAction
         }
     }
 
-    private function getRequestParameter(Request $request, string $parameterName, bool $isRequired = true): ?string
-    {
-        $parameterValue = $request->get($parameterName);
-
-        if ($isRequired && null === $parameterValue) {
-            throw new BadRequestHttpException(
-                sprintf('Parameter %s is required', $parameterName)
-            );
-        }
-
-        return $parameterValue;
-    }
-
-    private function validateParameters(Request $request): void
-    {
-        $grant_type = $this->getRequestParameter($request, 'grant_type');
-        $client_assertion_type = $this->getRequestParameter($request, 'client_assertion_type');
-        $scopes = $this->getRequestParameter($request, 'scope');
-
-        // validation
-        if ('client_credentials' !== $grant_type) {
-            throw new BadRequestHttpException('Only Client credentials grant type is supported');
-        }
-
-        if ('urn:ietf:params:oauth:client-assertion-type:jwt-bearer' !== $client_assertion_type) {
-            throw new BadRequestHttpException('Incorrect client assertion is provided');
-        }
-
-        if (is_string($scopes)) {
-            $scopes = explode(' ', $scopes);
-        }
-
-        // TODO: how validate scopes?
-        // in phpleague we have a method https://github.com/thephpleague/oauth2-server/blob/master/src/Grant/AbstractGrant.php#L288
-    }
-
-    protected function validateAssertion(Request $request): array
-    {
-        $client_assertion = $this->parser->parse($this->getRequestParameter($request, 'client_assertion'));
-
-        // TODO: need validate signature
-        // https://github.com/MilesChou/oauth2-server-jwt-bearer-grant/blob/master/src/JwtBearerGrant.php#L155
-
-        $claims = $client_assertion->getClaims();
-
-        // TODO: validate claims
-        // we can use package "web-token/jwt-checker"
-
-
-        return $claims;
-    }
+//    private function getRequestParameter(Request $request, string $parameterName, bool $isRequired = true): ?string
+//    {
+//        $parameterValue = $request->get($parameterName);
+//
+//        if ($isRequired && null === $parameterValue) {
+//            throw new BadRequestHttpException(
+//                sprintf('Parameter %s is required', $parameterName)
+//            );
+//        }
+//
+//        return $parameterValue;
+//    }
 }

@@ -5,6 +5,9 @@
     "defuse/php-encryption": {
         "version": "v2.2.1"
     },
+    "fgrosse/phpasn1": {
+        "version": "2.1.x-dev"
+    },
     "lcobucci/jwt": {
         "version": "3.3.1"
     },
@@ -13,6 +16,9 @@
     },
     "league/oauth2-server": {
         "version": "8.0.0"
+    },
+    "mileschout/oauth2-server-jwt-bearer-grant": {
+        "version": "dev-master"
     },
     "nesbot/carbon": {
         "version": "2.30.0"
@@ -28,6 +34,9 @@
         "files": [
             "config/packages/nyholm_psr7.yaml"
         ]
+    },
+    "paragonie/sodium_compat": {
+        "version": "v1.12.2"
     },
     "php": {
         "version": "7.4"
@@ -58,6 +67,9 @@
     },
     "ramsey/uuid": {
         "version": "3.9.3"
+    },
+    "spomky-labs/base64url": {
+        "version": "v2.x-dev"
     },
     "symfony/cache": {
         "version": "v5.0.5"
@@ -246,5 +258,35 @@
     },
     "twig/twig": {
         "version": "v3.0.3"
+    },
+    "web-token/jwt-checker": {
+        "version": "v1.3.x-dev"
+    },
+    "web-token/jwt-core": {
+        "version": "v1.3.x-dev"
+    },
+    "web-token/jwt-key-mgmt": {
+        "version": "v1.3.x-dev"
+    },
+    "web-token/jwt-signature": {
+        "version": "v1.3.x-dev"
+    },
+    "web-token/jwt-signature-algorithm-ecdsa": {
+        "version": "v1.3.x-dev"
+    },
+    "web-token/jwt-signature-algorithm-eddsa": {
+        "version": "v1.3.x-dev"
+    },
+    "web-token/jwt-signature-algorithm-hmac": {
+        "version": "v1.3.x-dev"
+    },
+    "web-token/jwt-signature-algorithm-none": {
+        "version": "v1.3.x-dev"
+    },
+    "web-token/jwt-signature-algorithm-rsa": {
+        "version": "v1.3.x-dev"
+    },
+    "web-token/jwt-util-ecc": {
+        "version": "v1.3.x-dev"
     }
 }

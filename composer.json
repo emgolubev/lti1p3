@@ -1,6 +1,13 @@
 {
     "type": "project",
     "license": "proprietary",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/MilesChou/oauth2-server-jwt-bearer-grant"
+        }
+    ],
+    "minimum-stability": "dev",
     "require": {
         "php": "^7.2.5",
         "ext-ctype": "*",
@@ -10,6 +17,7 @@
         "codercat/jwk-to-pem": "^0.0.3",
         "lcobucci/jwt": "^3.3",
         "league/oauth2-server": "^8.0",
+        "mileschout/oauth2-server-jwt-bearer-grant": "dev-master",
         "nesbot/carbon": "^2.29",
         "nyholm/psr7": "^1.2",
         "ramsey/uuid": "^3.9",

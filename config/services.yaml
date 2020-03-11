@@ -6,6 +6,11 @@ parameters:
     lti.oidc.token.ttl: 500
     lti.oidc.state.ttl: 500
     lti.oidc.nonce.ttl: 500
+    # OAuth2
+    oauth2_public_key_path: '%env(resolve:OAUTH2_PUBLIC_KEY_PATH)%'
+    oauth2_private_key_path: '%env(resolve:OAUTH2_PRIVATE_KEY_PATH)%'
+    oauth2_private_key_pass_phrase: '%env(resolve:OAUTH2_PRIVATE_KEY_PASS_PHRASE)%'
+    oauth2_encryption_key: '%env(resolve:OAUTH2_ENCRYPTION_KEY)%'
 
 services:
     _defaults:
@@ -37,6 +42,26 @@ services:
         factory:   ['@App\Lti\Builder\DeploymentRepositoryBuilder', 'build']
         arguments: ['%kernel.project_dir%/config/lti.yaml']
 
+    App\Security\OAuth2\Factory\OAuth2CryptKeyFactory:
+        lazy: true
+
+    oauth2.public_key:
+        lazy: true
+        class: League\OAuth2\Server\CryptKey
+        factory:   ['@App\Security\OAuth2\Factory\OAuth2CryptKeyFactory', 'create']
+        arguments: ['%oauth2_public_key_path%']
+
+    oauth2.private_key:
+        lazy: true
+        class: League\OAuth2\Server\CryptKey
+        factory:   ['@App\Security\OAuth2\Factory\OAuth2CryptKeyFactory', 'create']
+        arguments: ['%oauth2_private_key_path%', '%oauth2_private_key_pass_phrase%']
+
+    App\Security\OAuth2\Factory\OAuth2AuthorizationServerFactory:
+        arguments:
+            $privateKey: '@oauth2.private_key'
+            $encryptionKey: '%oauth2_encryption_key%'
+
     ### VENDORS SERVICES ###
     CoderCat\JWKToPEM\JWKConverter: ~
 
@@ -46,6 +71,9 @@ services:
 
     Lcobucci\JWT\Signer:
         class: Lcobucci\JWT\Signer\Rsa\Sha256
+
+    League\OAuth2\Server\AuthorizationServer:
+        factory: ['@App\Security\OAuth2\Factory\OAuth2AuthorizationServerFactory', 'create']
 
     Symfony\Component\Yaml\Parser: ~
 
