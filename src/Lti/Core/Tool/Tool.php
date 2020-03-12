@@ -48,7 +48,6 @@ class Tool implements ToolInterface
         $this->oidcLoginInitiationUrl = $oidcLoginInitiationUrl;
     }
 
-
     public function getId(): string
     {
         return $this->id;
