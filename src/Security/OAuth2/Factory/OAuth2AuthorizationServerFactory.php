@@ -24,6 +24,7 @@ use App\Security\OAuth2\Repository\OAuth2ClientRepository;
 use App\Security\OAuth2\Repository\OAuth2ScopeRepository;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\CryptKey;
+use OAT\Library\Lti1p3Core\Security\Oauth2\JwtClientCredentialsGrant;
 
 class OAuth2AuthorizationServerFactory
 {
@@ -66,7 +67,7 @@ class OAuth2AuthorizationServerFactory
             $this->encryptionKey
         );
 
-        $server->enableGrantType(new CorrectJwtBearerGrant());
+        $server->enableGrantType(new JwtClientCredentialsGrant());
 
         return $server;
     }
