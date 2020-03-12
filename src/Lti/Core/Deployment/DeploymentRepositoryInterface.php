@@ -26,5 +26,5 @@ interface DeploymentRepositoryInterface
 {
     public function find(string $id): ?DeploymentInterface;
 
-    public function findByIssuer(string $issuer): ?DeploymentInterface;
+    public function findByIssuer(string $issuer, string $clientId = null): ?DeploymentInterface;
 }

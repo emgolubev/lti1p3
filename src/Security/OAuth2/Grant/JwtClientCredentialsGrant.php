@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OAT\Library\Lti1p3Core\Security\Oauth2;
 
+use App\Lti\Core\Deployment\DeploymentRepositoryInterface;
 use DateInterval;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Key;
@@ -37,11 +38,12 @@ class JwtClientCredentialsGrant extends AbstractGrant
     /** @var ScopeRepositoryInterface */
     protected $scopeRepository;
 
-    protected $publicKey = null;
+    /** @var DeploymentRepositoryInterface */
+    private $deploymentRepository;
 
-    public function __construct($publicKey = null)
+    public function __construct(DeploymentRepositoryInterface $deploymentRepository)
     {
-        $this->publicKey = $publicKey;
+        $this->deploymentRepository = $deploymentRepository;
     }
 
     public function getIdentifier(): string
@@ -109,11 +111,20 @@ class JwtClientCredentialsGrant extends AbstractGrant
 
         $token = (new Parser())->parse((string) $assertion);
 
+        // looking for deployment
+        $deployment =  $this->deploymentRepository->findByIssuer($token->getClaim('iss'), $token->getClaim('sub'));
+
+        if (null === $deployment) {
+            throw OAuthServerException::invalidRequest('client_assertion', 'Deployment not found');
+        }
+
+        $publicKey = $deployment->getToolKeyPair()->getPublicKey();
+
         if (
             // validate timestamps at the moment
             false === $token->validate(new ValidationData())
             // if public key is set and verification fails
-            || ($this->publicKey && false === $token->verify(new Sha256(), new Key($this->publicKey)))
+            || false === $token->verify(new Sha256(), $publicKey)
         ) {
             throw OAuthServerException::invalidRequest('client_assertion', 'Provided JWT is not valid');
         }

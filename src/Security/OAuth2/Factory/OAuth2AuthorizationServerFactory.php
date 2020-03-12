@@ -18,7 +18,8 @@
  */
 namespace App\Security\OAuth2\Factory;
 
-use App\Security\OAuth2\Grant\CorrectJwtBearerGrant;
+use App\Lti\Core\Deployment\DeploymentRepository;
+use App\Lti\Core\Deployment\DeploymentRepositoryInterface;
 use App\Security\OAuth2\Repository\OAuth2AccessTokenRepository;
 use App\Security\OAuth2\Repository\OAuth2ClientRepository;
 use App\Security\OAuth2\Repository\OAuth2ScopeRepository;
@@ -43,16 +44,21 @@ class OAuth2AuthorizationServerFactory
     /** @var string */
     private $encryptionKey;
 
+    /** @var DeploymentRepository */
+    private $deploymentRepository;
+
     public function __construct(
         OAuth2AccessTokenRepository $accessTokenRepository,
         OAuth2ClientRepository $clientRepository,
         OAuth2ScopeRepository $scopeRepository,
+        DeploymentRepositoryInterface $deploymentRepository,
         CryptKey $privateKey,
         string $encryptionKey
     ) {
         $this->accessTokenRepository = $accessTokenRepository;
         $this->clientRepository = $clientRepository;
         $this->scopeRepository = $scopeRepository;
+        $this->deploymentRepository = $deploymentRepository;
         $this->privateKey = $privateKey;
         $this->encryptionKey = $encryptionKey;
     }
@@ -67,7 +73,7 @@ class OAuth2AuthorizationServerFactory
             $this->encryptionKey
         );
 
-        $server->enableGrantType(new JwtClientCredentialsGrant());
+        $server->enableGrantType(new JwtClientCredentialsGrant($this->deploymentRepository));
 
         return $server;
     }

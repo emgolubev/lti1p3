@@ -46,7 +46,7 @@ class DeploymentRepository implements DeploymentRepositoryInterface
         return $this->deployments[$id] ?? null;
     }
 
-    public function findByIssuer(string $issuer): ?DeploymentInterface
+    public function findByIssuer(string $issuer, string $clientId = null): ?DeploymentInterface
     {
         foreach ($this->deployments as $deployment) {
             if ($deployment->getPlatform()->getAudience() === $issuer) {
