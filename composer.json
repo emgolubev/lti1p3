@@ -29,7 +29,8 @@
         "symfony/http-client": "^5.0",
         "symfony/psr-http-message-bridge": "^2.0",
         "symfony/twig-pack": "^1.0",
-        "symfony/yaml": "5.0.*"
+        "symfony/yaml": "5.0.*",
+        "guzzlehttp/guzzle": "^6.5"
     },
     "require-dev": {
     },
