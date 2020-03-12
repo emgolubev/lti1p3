@@ -9,7 +9,7 @@
         "version": "1.x-dev"
     },
     "php": {
-        "version": "7.2"
+        "version": "7.4"
     },
     "ralouphie/getallheaders": {
         "version": "3.0.3"
