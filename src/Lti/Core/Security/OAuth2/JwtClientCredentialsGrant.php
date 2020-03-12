@@ -7,7 +7,6 @@ namespace OAT\Library\Lti1p3Core\Security\Oauth2;
 use App\Lti\Core\Deployment\DeploymentRepositoryInterface;
 use DateInterval;
 use Lcobucci\JWT\Parser;
-use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\ValidationData;
 use League\Event\EmitterAwareTrait;
