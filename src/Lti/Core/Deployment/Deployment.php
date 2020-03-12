@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace App\Lti\Core\Deployment;
 
 use App\Lti\Core\Platform\PlatformInterface;
+use App\Lti\Core\Security\Key\KeyChainInterface;
 use App\Lti\Core\Tool\ToolInterface;
 
 class Deployment implements DeploymentInterface
@@ -89,5 +90,25 @@ class Deployment implements DeploymentInterface
     public function getToolContext(): DeploymentContextInterface
     {
         return $this->toolContext;
+    }
+
+    public function getClientId(): string
+    {
+        return $this->getOAuth2ClientId();
+    }
+
+    public function getPlatformJwksUrl(): string
+    {
+        return $this->platformContext->getJwksUrl();
+    }
+
+    public function getToolKeyPair(): KeyChainInterface
+    {
+        return $this->toolContext->getKeyChain();
+    }
+
+    public function getPlatformKeyPair(): ?KeyChainInterface
+    {
+        return $this->platformContext->getKeyChain();
     }
 }

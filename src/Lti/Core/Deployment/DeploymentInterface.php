@@ -23,19 +23,22 @@ declare(strict_types=1);
 namespace App\Lti\Core\Deployment;
 
 use App\Lti\Core\Platform\PlatformInterface;
+use App\Lti\Core\Security\Key\KeyChainInterface;
 use App\Lti\Core\Tool\ToolInterface;
 
 interface DeploymentInterface
 {
     public function getId(): string;
 
-    public function getOAuth2ClientId(): string;
+    public function getClientId(): string;
 
     public function getPlatform(): PlatformInterface;
 
     public function getTool(): ToolInterface;
 
-    public function getPlatformContext(): DeploymentContextInterface;
+    public function getPlatformJwksUrl(): string;
 
-    public function getToolContext(): DeploymentContextInterface;
+    public function getToolKeyPair(): KeyChainInterface;
+
+    public function getPlatformKeyPair(): ?KeyChainInterface;
 }
