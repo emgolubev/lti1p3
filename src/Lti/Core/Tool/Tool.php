@@ -68,4 +68,9 @@ class Tool implements ToolInterface
     {
         return $this->oidcLoginInitiationUrl;
     }
+
+    public function getOAuth2AccessTokenUrl(): string
+    {
+        // TODO: Implement getOAuth2AccessTokenUrl() method.
+    }
 }
