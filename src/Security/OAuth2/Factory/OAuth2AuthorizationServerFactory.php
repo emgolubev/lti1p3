@@ -20,6 +20,7 @@ namespace App\Security\OAuth2\Factory;
 
 use App\Lti\Core\Deployment\DeploymentRepository;
 use App\Lti\Core\Deployment\DeploymentRepositoryInterface;
+use App\Lti\Core\Security\OAuth2\CustomBearerResponseType;
 use App\Security\OAuth2\Repository\OAuth2AccessTokenRepository;
 use App\Security\OAuth2\Repository\OAuth2ClientRepository;
 use App\Security\OAuth2\Repository\OAuth2ScopeRepository;
@@ -70,7 +71,8 @@ class OAuth2AuthorizationServerFactory
             $this->accessTokenRepository,
             $this->scopeRepository,
             $this->privateKey,
-            $this->encryptionKey
+            $this->encryptionKey,
+            new CustomBearerResponseType()
         );
 
         $server->enableGrantType(new JwtClientCredentialsGrant($this->deploymentRepository));
