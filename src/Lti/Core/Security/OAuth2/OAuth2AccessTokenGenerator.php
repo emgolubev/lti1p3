@@ -20,11 +20,28 @@
 
 declare(strict_types=1);
 
-namespace App\Lti\Core\Deployment;
+namespace App\Lti\Core\Security\OAuth2;
 
-interface DeploymentRepositoryInterface
+use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
+class OAuth2AccessTokenGenerator
 {
-    public function find(string $id): ?DeploymentInterface;
+    /** @var AuthorizationServer */
+    private $authorizationServer;
 
-    public function findByIssuer(string $issuer, string $clientId = null): ?DeploymentInterface;
+    public function __construct(AuthorizationServer $authorizationServer)
+    {
+        $this->authorizationServer = $authorizationServer;
+    }
+
+    /**
+     * @throws OAuthServerException
+     */
+    public function generate(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        return $this->authorizationServer->respondToAccessTokenRequest($request, $response);
+    }
 }

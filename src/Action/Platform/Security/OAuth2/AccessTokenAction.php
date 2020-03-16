@@ -22,18 +22,61 @@ declare(strict_types=1);
 
 namespace App\Action\Platform\Security\OAuth2;
 
+use App\Lti\Core\Security\OAuth2\OAuth2AccessTokenGenerator;
+use Lcobucci\JWT\Parser;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use Symfony\Bridge\PsrHttpMessage\HttpFoundationFactoryInterface;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Throwable;
 
 class AccessTokenAction
 {
-    public function __invoke(Request $request): JsonResponse
+    /** @var Parser */
+    private $parser;
+
+    /** @var HttpMessageFactoryInterface */
+    private $psr7Factory;
+
+    /** @var HttpFoundationFactoryInterface */
+    private $httpFoundationFactory;
+
+    /**  @var OAuth2AccessTokenGenerator */
+    private $accessTokenGenerator;
+
+    public function __construct(
+        Parser $parser,
+        HttpMessageFactoryInterface $psr7Factory,
+        HttpFoundationFactoryInterface $httpFoundationFactory,
+        OAuth2AccessTokenGenerator $accessTokenGenerator
+    ) {
+        $this->parser = $parser;
+        $this->psr7Factory = $psr7Factory;
+        $this->httpFoundationFactory = $httpFoundationFactory;
+        $this->accessTokenGenerator = $accessTokenGenerator;
+    }
+
+    public function __invoke(Request $request): Response
     {
-        return new JsonResponse([
-            "scope" =>  "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly https://purl.imsglobal.org/spec/lti-ags/scope/score https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly",
-            "access_token" => "eyJhbGciOiJSUzI1NiIsImtpZCI6IlZVNUJOYVU2a0xZVlV2aWRneTZGbUpoUC1xc2pCSldtUUIwMkNyd2MzMm8ifQ.eyJjdXN0b20iOnt9LCJzY29wZSI6Imh0dHBzOi8vcHVybC5pbXNnbG9iYWwub3JnL3NwZWMvbHRpLWFncy9zY29wZS9saW5laXRlbSBodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL2x0aS1hZ3Mvc2NvcGUvcmVzdWx0LnJlYWRvbmx5IGh0dHBzOi8vcHVybC5pbXNnbG9iYWwub3JnL3NwZWMvbHRpLWFncy9zY29wZS9zY29yZSBodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL2x0aS1ucnBzL3Njb3BlL2NvbnRleHRtZW1iZXJzaGlwLnJlYWRvbmx5IiwiaXNzIjoiaHR0cHM6Ly9sdGktcmkuaW1zZ2xvYmFsLm9yZyIsImF1ZCI6IjEyMzQ1IiwiaWF0IjoxNTgyODIxODgwLCJleHAiOjE1ODI4MjIxODAsInN1YiI6IjE0MTU5MWRiMmRiNGE0N2RlOTYyIiwibm9uY2UiOiIyZWE4NDY4ZDk2ZGVjNmNiNDRkZCIsInBsYXRmb3JtX2lkIjo3MjB9.G2zvjOalQW8wav3grE9vAJ2eU3n0RbsJyu5nFMEhXOS67ttnmwIQ-lLMEZJ4JsSJT-B_xGjKfyYM286End05-jPjEmLlRRkpfN366zhzZQ8h8uqU_ngB6dtvfQIcU6FGI_dUYE3wmbEKR1a31FbxFFMzYM7FbQTeaF60QLXa_ah8HbiFwo2Z1nkGPUYU_iKYb5dUo5MF6ECcKgyN1BpYJEWlceEKYw54DWOqnqnnfMLDovfAuPCe5pvQauadLm1OoMneGAb223QXHK0PCfcAIuiHmvhxfL13kqptk9OxZviWoWMjCFovPwb-zqJN8sEJ2nEuBwj5n1U9LCEWEnzzUA",
-            "token_type" => "Bearer",
-            "expires_in" => 3600
-        ]);
+        $psr7Response = $this->psr7Factory->createResponse(new Response());
+
+        try {
+            $psr7AuthenticationResponse = $this->accessTokenGenerator->generate(
+                $this->psr7Factory->createRequest($request),
+                $psr7Response
+            );
+
+            return $this->httpFoundationFactory->createResponse($psr7AuthenticationResponse);
+
+        } catch (BadRequestHttpException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 400);
+        } catch (OAuthServerException $exception) {
+            return $this->httpFoundationFactory->createResponse($exception->generateHttpResponse($psr7Response));
+        } catch (Throwable $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 500);
+        }
     }
 }

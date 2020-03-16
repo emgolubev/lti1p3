@@ -31,4 +31,6 @@ interface ToolInterface
     public function getDeepLaunchUrl(): string;
 
     public function getOidcLoginInitiationUrl(): string;
+
+    public function getOAuth2AccessTokenUrl(): string;
 }

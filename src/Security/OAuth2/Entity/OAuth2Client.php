@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,42 +14,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2020 (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2019 (original work) Open Assessment Technologies SA;
  */
+namespace App\Security\OAuth2\Entity;
 
-declare(strict_types=1);
+use League\OAuth2\Server\Entities\ClientEntityInterface;
 
-namespace App\Lti\Core\Tool;
-
-class Tool implements ToolInterface
+class OAuth2Client implements ClientEntityInterface
 {
     /** @var string */
-    private $id;
+    private $identifier;
 
     /** @var string */
     private $name;
 
     /** @var string */
-    private $deepLaunchUrl;
+    private $redirectUri;
 
-    /** @var string */
-    private $oidcLoginInitiationUrl;
+    /** @var string[] */
+    private $roles;
 
-    public function __construct(
-        string $id,
-        string $name,
-        string $deepLaunchUrl,
-        string $oidcLoginInitiationUrl
-    ) {
-        $this->id = $id;
+    public function __construct(string $identifier, string $name, string $redirectUri, array $roles = [])
+    {
+        $this->identifier = $identifier;
         $this->name = $name;
-        $this->deepLaunchUrl = $deepLaunchUrl;
-        $this->oidcLoginInitiationUrl = $oidcLoginInitiationUrl;
+        $this->redirectUri = $redirectUri;
+        $this->roles = $roles;
     }
 
-    public function getId(): string
+    public function getIdentifier(): string
     {
-        return $this->id;
+        return $this->identifier;
     }
 
     public function getName(): string
@@ -58,18 +52,18 @@ class Tool implements ToolInterface
         return $this->name;
     }
 
-    public function getDeepLaunchUrl(): string
+    public function getRedirectUri(): string
     {
-        return $this->deepLaunchUrl;
+        return $this->redirectUri;
     }
 
-    public function getOidcLoginInitiationUrl(): string
+    public function getRoles(): array
     {
-        return $this->oidcLoginInitiationUrl;
+        return $this->roles;
     }
 
-    public function getOAuth2AccessTokenUrl(): string
+    public function isConfidential(): bool
     {
-        // TODO: Implement getOAuth2AccessTokenUrl() method.
+        return false;
     }
 }

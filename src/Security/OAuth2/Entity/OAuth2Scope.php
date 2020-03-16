@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,16 +14,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2020 (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2019 (original work) Open Assessment Technologies SA;
  */
+namespace App\Security\OAuth2\Entity;
 
-declare(strict_types=1);
+use League\OAuth2\Server\Entities\ScopeEntityInterface;
 
-namespace App\Lti\Core\Deployment;
-
-interface DeploymentRepositoryInterface
+class OAuth2Scope implements ScopeEntityInterface
 {
-    public function find(string $id): ?DeploymentInterface;
+    /** @var string */
+    private $identifier;
 
-    public function findByIssuer(string $issuer, string $clientId = null): ?DeploymentInterface;
+    public function __construct(string $identifier)
+    {
+        $this->identifier = $identifier;
+    }
+
+    public function getIdentifier(): string
+    {
+        return $this->identifier;
+    }
+
+    public function jsonSerialize()
+    {
+        return ['identifier' => $this->getIdentifier()];
+    }
 }
